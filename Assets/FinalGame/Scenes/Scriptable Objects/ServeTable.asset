@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ab7c3a778a78b4e9648386eee2fb7b, type: 3}
+  m_Name: ServeTable
+  m_EditorClassIdentifier: 
+  tableName: ServeTable
+  foodType: 3
+  cookingTime: 0
+  tablePrefab: {fileID: 4196965934697374681, guid: 428b39398b33a5447b96f92f0030bf1b, type: 3}
+  processTime: 1
+  isDone: 0
+  showDebugGizmos: 1
