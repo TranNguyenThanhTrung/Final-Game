@@ -1,5 +1,5 @@
 ﻿//using UnityEngine;
-//using static ChefBehavior2;
+//using static ChefBehavior;
 //// TableManager.cs (đã có từ trước)
 //[CreateAssetMenu(fileName = "TableManager", menuName = "Restaurant/Table Manager")]
 //public class TableManager : ScriptableObject

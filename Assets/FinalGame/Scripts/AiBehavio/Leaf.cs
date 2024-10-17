@@ -1,10 +1,10 @@
 using System;
 
-public class LeafNode : Node
+public class Leaf : Node
 {
     private Func<NodeState> action;
 
-    public LeafNode(Func<NodeState> action)
+    public Leaf(Func<NodeState> action)
     {
         this.action = action;
     }

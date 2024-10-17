@@ -1,18 +1,15 @@
-public enum NodeState
-{
-    SUCCESS,
-    FAILURE,
-    RUNNING
-}
+
 
 public abstract class Node
 {
-    protected NodeState _state;
-
-    public NodeState state
+    public enum NodeState
     {
-        get { return _state; }
+        SUCCESS,
+        FAILURE,
+        RUNNING
     }
+    protected NodeState state;
 
+    public NodeState State => state;
     public abstract NodeState Evaluate();
 }

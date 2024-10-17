@@ -1,144 +1,99 @@
-//using System;
-//using System.Collections;
-//using System.Collections.Generic;
-//using UnityEngine;
-//using UnityEngine.AI;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
 
-//public class CustommerBehavior : MonoBehaviour
-//{
-//    public GameObject spawnPos;
-//    public GameObject resTaurantPos;
-//    public GameObject disSpawnPos;
-//    [SerializeField] private Seat seat;
-//    public enum FoodType
-//    {
-//        Burger,
-//        Water,
-//        Apple,
-//        None
-//    }
-//    [Header("ScriptableObject References")]
-//    public ActionState state = ActionState.Idle;
+public class CustommerBehavior : MonoBehaviour
+{
+    public enum FoodType
+    {
+        Burger,
+        Water,
+        Apple,
+        None
+    }
 
-//    private NavMeshAgent agent;
-//    private Behaviortree tree;
-//    private Node.Status treeStatus = Node.Status.RUNNING;
+    private NavMeshAgent agent;
+    private BehaviorTree tree;
 
-//    public enum ActionState
-//    {
-//        Idle,
-//        Working
-//    }
+    private Node.NodeState treeStatus = Node.NodeState.RUNNING;
+    public ActionState state = ActionState.Idle;
 
-//    private void Awake()
-//    {
-//        agent = GetComponent<NavMeshAgent>();
-//        InitializeTables();
-//    }
+    public enum ActionState
+    {
+        Idle,
+        Working
+    }
 
-//    private void OnEnable()
-//    {
-//        //orderChannel.OnOrderCreated += HandleNewOrder;
-//    }
-
-//    private void OnDisable()
-//    {
-//        //orderChannel.OnOrderCreated -= HandleNewOrder;
-//    }
-
-//    private void InitializeTables()
-//    {
-//    }
-
-//    void Start()
-//    {
-//        InitializeBehaviorTree();
-//    }
-
-//    private void InitializeBehaviorTree()
-//    {
-//        tree = new Behaviortree();
-//        Sequence GoToEat = new Sequence("Service");
-
-//        Leaf moveToRestaurant = new Leaf("Move ToRestaurant", () => MoveToRestaurant());
-//        Leaf findSeat = new Leaf("Find Seat", () => FindSeat());
-//        Leaf oder = new Leaf("Oder", () => Oder());
-//        Leaf waitForOder = new Leaf("Wait For Oder", () => WaitForOder());
-//        Leaf leaveRestaurant = new Leaf("Leave Restaurant", () => LeaveRestaurant());
-
-//        GoToEat.AddChild(moveToRestaurant);
-//        GoToEat.AddChild(findSeat);
-//        GoToEat.AddChild(oder);
-//        GoToEat.AddChild(waitForOder);
-//        GoToEat.AddChild(leaveRestaurant);
-
-//        tree.AddChild(GoToEat);
-//    }
-
-//    private Node.Status Oder()
-//    {
-//        throw new NotImplementedException();
-//    }
+    private void Awake()
+    {
+        agent = GetComponent<NavMeshAgent>();
+    }
 
 
-//    private Node.Status WaitForOder()
-//    {
-//        throw new NotImplementedException();
-//    }
+    private void InitializeBehaviorTree()
+    {
+        Leaf processPayment = new Leaf(Pay);
+        Leaf leaveRestaurant = new Leaf(LeaveRestaurant);
+        Leaf isWaiting = new Leaf(IsWaiting);
+        Leaf goToEmptyChair = new Leaf(GoToEmptyChair);
+        Leaf goToFrontDoor = new Leaf(GoToFrontDoor);
 
-//    private Node.Status FindSeat()
-//    {
-//        if (!seat.hasCustommer)
-//        {
-//            //Ngoi luon
-//            return Node.Status.SUCCESS;
-//        }
-//        else 
-//        { 
-//            // tim ghe khac
-//        }
-//        return Node.Status.SUCCESS;
-//    }
+        Sequence hasBeenServed = new Sequence(new List<Node> { processPayment, leaveRestaurant});
+        Sequence notBeenServed = new Sequence(new List<Node> { isWaiting});
+        Selector orderCheck = new Selector(new List<Node> { hasBeenServed, notBeenServed });
+        Sequence hasChair = new Sequence(new List<Node>  {goToEmptyChair, orderCheck });
+        Sequence noAvailableChair = new Sequence(new List<Node> { leaveRestaurant});
+        Selector checkSeatAvailability = new Selector(new List<Node> { hasChair, noAvailableChair});
 
-//    private Node.Status MoveToRestaurant()
-//    {
-//        var status = GoToLocation(resTaurantPos.transform.position);
-//        return status;
-//    }
-//    private Node.Status LeaveRestaurant()
-//    {
-//        var status = GoToLocation(disSpawnPos.transform.position);
-//        return status;
-//    }
+        Sequence enterRestaurant = new Sequence(new List<Node> {goToFrontDoor , checkSeatAvailability });
+    }
 
-//    void Update()
-//    {
-//        if (treeStatus != Node.Status.SUCCESS)
-//        {
-//            treeStatus = tree.Process();
-//        }
-//    }
+    private Node.NodeState GoToFrontDoor()
+    {
+        throw new NotImplementedException();
+    }
 
-//    private Node.Status GoToLocation(Vector3 destination)
-//    {
-//        float distance = Vector3.Distance(transform.position, destination);
+    private Node.NodeState GoToEmptyChair()
+    {
+        throw new NotImplementedException();
+    }
 
-//        if (state == ActionState.Idle)
-//        {
-//            agent.SetDestination(destination);
-//            state = ActionState.Working;
-//        }
-//        else if (Vector3.Distance(agent.pathEndPosition, destination) >= 2)
-//        {
-//            state = ActionState.Idle;
-//            return Node.Status.FAILURE;
-//        }
-//        else if (distance < 2)
-//        {
-//            state = ActionState.Idle;
-//            return Node.Status.SUCCESS;
+    private Node.NodeState IsWaiting()
+    {
+        throw new NotImplementedException();
+    }
 
-//        }
-//        return Node.Status.RUNNING;
-//    }
-//}
+    private Node.NodeState LeaveRestaurant()
+    {
+        throw new NotImplementedException();
+    }
+
+    private Node.NodeState Pay()
+    { 
+    
+        return Node.NodeState.SUCCESS;
+    }
+    private Node.NodeState GoToLocation(Vector3 destination)
+    {
+        float distance = Vector3.Distance(transform.position, destination);
+
+        if (state == ActionState.Idle)
+        {
+            agent.SetDestination(destination);
+            state = ActionState.Working;
+        }
+        else if (Vector3.Distance(agent.pathEndPosition, destination) >= 2)
+        {
+            state = ActionState.Idle;
+            return Node.NodeState.FAILURE;
+        }
+        else if (distance < 2)
+        {
+            state = ActionState.Idle;
+            return Node.NodeState.SUCCESS;
+        }
+        return Node.NodeState.RUNNING;
+    }
+}

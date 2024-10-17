@@ -1,168 +1,124 @@
-//using System;
-//using System.Collections;
-//using System.Collections.Generic;
-//using UnityEngine;
-//using UnityEngine.AI;
+﻿using UnityEngine.AI;
+using UnityEngine;
+using System.Collections.Generic;
+using System;
+using Unity.VisualScripting;
+using System.Collections;
+
+public class ChefBehavior : MonoBehaviour
+{
+    public enum FoodType
+    {
+        Burger,
+        Water,
+        Apple,
+        None
+    }
+    public enum ActionState
+    {
+        Idle,
+        Working
+    }
+
+    public bool Oder;
+    public bool foodDone;
+    public bool pick;
+
+    private BehaviorTree tree;
+    private NavMeshAgent agent;
+
+    private Node.NodeState treeStatus = Node.NodeState.RUNNING;
+    public ActionState state = ActionState.Idle;
+
+    private Node InitializeBehaviorTree()
+    {
+
+        Leaf goToKitchen = new Leaf(GoToKitchen);
+        Leaf idle = new Leaf(Idle);
+        Leaf bringFoodToTable = new Leaf(BringFoodToTable);
+        Leaf pickUpFood = new Leaf(PickUpFood);
 
 
-//public class ChefBehavior : MonoBehaviour
-//{
-//    public float currentTime = 0;
-//    public float foodBaseTime;
+        Sequence free = new Sequence(new List<Node> { idle });
+        Sequence serverOder = new Sequence(new List<Node> { pickUpFood, bringFoodToTable });
+        Selector foodState = new Selector(new List<Node> { serverOder, idle });
+        Sequence hasOder = new Sequence(new List<Node> { goToKitchen, foodState });
 
-//    public NavMeshAgent agent;
+        Selector jobState = new Selector(new List<Node> { hasOder, free });
 
-//    private Behaviortree tree;
+        return jobState;
+    }
+    private void Start()
+    {
+        Node chefBTRoot = InitializeBehaviorTree();
+        tree = new BehaviorTree(chefBTRoot);
+    }
 
-//    public GameObject appleTable;
-//    public GameObject bugerTable;
-//    public GameObject waterTable;
-//    public GameObject serveTable;
-//    public GameObject kitChenTable;
+    private void Update()
+    {
+        tree.Update();
+    }
 
+    private Node.NodeState PickUpFood()
+    {
+        if (foodDone)
+        {
+            Debug.Log("Da cam mon an");
+           
+            return Node.NodeState.SUCCESS;
+            
+        }
+        else
+        {
+            return Node.NodeState.FAILURE;
+        }
+    }
 
-//    public enum typeFood
-//    {
-//        BUGER = 0,
-//        WATER = 1,
-//        APPLE = 2
-//    }
-//    public bool hasOder;
+    private Node.NodeState BringFoodToTable()
+    {
 
-//    public enum ActionState
-//    {
-//        IDLE, WORKING
-//    }
+            Debug.Log("Dang dem do an ra");
+            return Node.NodeState.SUCCESS;
+    }
 
-//    public ActionState state = ActionState.IDLE;
-//    Node.Status treeStatus = Node.Status.RUNNING;
-//    private void Awake()
-//    {
-//        appleTable = GameObject.FindGameObjectWithTag("AppleTable");
-//        waterTable = GameObject.FindGameObjectWithTag("WaterTable");
-//        bugerTable = GameObject.FindGameObjectWithTag("BugerTable");
-//        serveTable = GameObject.FindGameObjectWithTag("ServeTable");
-//        agent = GetComponent<NavMeshAgent>();
-//    }
-//    void Start()
-//    {
-//        currentTime = foodBaseTime;
-//        tree = new Behaviortree();
-//        Sequence service = new Sequence("service");
+    private Node.NodeState Idle()
+    {
+        Debug.Log("Dang ranh roi");
+        return Node.NodeState.SUCCESS;
+    }
 
-//        //Leaf getApple = new Leaf("Go to FrontDoor", GetApple);
-//        //Leaf getWater = new Leaf("Go to FrontDoor", GetWater);
-//        //Leaf makeBuger = new Leaf("Go to FrontDoor", MakeBuger);
-//        Leaf cookingDone = new Leaf("Cooking done",()=> GoKooking(waterTable));
-//        Leaf serviceCustomer = new Leaf("Go to FrontDoor", GoToSreveFood);
+    private Node.NodeState GoToKitchen()
+    {
+        if (Oder)
+        {
+            Debug.Log("Dang vao bep");
+            return Node.NodeState.SUCCESS;
+        }
+        else
+        {
+            return Node.NodeState.FAILURE;
+        }
+    }
 
+    private Node.NodeState GoToLocation(Vector3 destination)
+    {
+        float distance = Vector3.Distance(transform.position, destination);
 
-//        Selector cooking = new Selector("Cooking");
-//        cooking.AddChild(cookingDone);
-//        //cooking.AddChild(makeBuger);
-//        //cooking.AddChild(getWater);
-//        //cooking.AddChild(getApple);
-
-//        service.AddChild(cooking);
-//        service.AddChild(serviceCustomer);
-//        tree.AddChild(service);
-//    }
-//    void Update()
-//    {
-//        if (treeStatus != Node.Status.SUCCESS)
-//        {
-//            treeStatus = tree.Process();
-//        }
-
-//    }
-
-//    private Node.Status HasOder(typeFood typeFood)
-//    {
-//        if (hasOder)
-//        {
-//            switch (typeFood)
-//            {
-//                case typeFood.BUGER:
-//                    foodBaseTime = 3;
-//                    GoKooking(bugerTable);
-//                    Debug.Log("Lam BUGER");
-//                    break;
-//                case typeFood.WATER:
-//                    foodBaseTime = 1;
-//                    GoKooking(waterTable);
-//                    Debug.Log("Dang lay Watter");
-//                    break;
-//                case typeFood.APPLE:
-//                    foodBaseTime = 1;
-//                    GoKooking(appleTable);
-//                    Debug.Log("Dang lay Apple");
-//                    break;
-//            }
-//            return Node.Status.FAILURE;
-//        }
-//        return Node.Status.SUCCESS;
-//    }
-//    Node.Status GoKooking(GameObject location)
-//    {
-//        var status = GoToLocation(location.transform.position);
-//        return status;
-//    }
-
-//    Node.Status Cooking()
-//    {
-//        HasOder(typeFood.BUGER);
-//        return Node.Status.RUNNING;
-//    }
-
-//    //private Node.Status GetApple()
-//    //{
-//    //    var status = GoKooking(appleTable);
-//    //    return status;
-//    //}
-
-//    //private Node.Status GetWater()
-//    //{
-//    //    var status = GoKooking(waterTable); ;
-//    //    return status;
-//    //}
-
-//    //private Node.Status MakeBuger()
-//    //{
-//    //    var status = GoKooking(bugerTable); ;
-//    //    return status;
-//    //}
-
-//    Node.Status GoToSreveFood()
-//    {
-//        var status = GoToLocation(serveTable.transform.position);
-//        return status;
-//    }
-
-
-//    Node.Status GoToLocation(Vector3 destination)
-//    {
-//        float distance = Vector3.Distance(transform.position, destination);
-//        if (state == ActionState.IDLE)
-//        {
-//            agent.SetDestination(destination);
-//            state = ActionState.WORKING;
-//        }
-//        else if (Vector3.Distance(agent.pathEndPosition, destination) >= 2)
-//        {
-//            state = ActionState.IDLE;
-//            return Node.Status.FAILURE;
-//        }
-//        else if (distance < 2)
-//        {
-//            currentTime -= Time.deltaTime;
-//            if (currentTime < 0)
-//            {
-//                state = ActionState.IDLE;
-//                currentTime = foodBaseTime;
-//                return Node.Status.SUCCESS;
-//            }
-//        }
-//        return Node.Status.RUNNING;
-//    }
-
-//}
+        if (state == ActionState.Idle)
+        {
+            agent.SetDestination(destination);
+            state = ActionState.Working;
+        }
+        else if (Vector3.Distance(agent.pathEndPosition, destination) >= 2)
+        {
+            state = ActionState.Idle;
+            return Node.NodeState.FAILURE;
+        }
+        else if (distance < 2)
+        {
+            state = ActionState.Idle;
+            return Node.NodeState.SUCCESS;
+        }
+        return Node.NodeState.RUNNING;
+    }
+}

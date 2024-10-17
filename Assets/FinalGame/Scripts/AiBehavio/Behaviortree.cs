@@ -8,11 +8,11 @@
     }
 
     // Hàm này được gọi mỗi frame để đánh giá cây
-    public void Update()
+    public void Update()    
     {
         if (rootNode != null)
         {
             rootNode.Evaluate();
-        }
+        } 
     }
 }
