@@ -1,15 +1,18 @@
-﻿public class Behaviortree : Node
+﻿public class BehaviorTree
 {
-    public Behaviortree()
+    private Node rootNode;  // Gốc của cây hành vi
+
+    public BehaviorTree(Node rootNode)
     {
-        name = "Root";
+        this.rootNode = rootNode;
     }
-    public Behaviortree(string name)
+
+    // Hàm này được gọi mỗi frame để đánh giá cây
+    public void Update()
     {
-        this.name = name;
-    }
-    public override Status Process()
-    {
-        return children[currentChild].Process();
+        if (rootNode != null)
+        {
+            rootNode.Evaluate();
+        }
     }
 }

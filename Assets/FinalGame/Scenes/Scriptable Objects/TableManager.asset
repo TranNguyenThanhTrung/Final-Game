@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 529a7786a37600b4c8cd03c61cd4e3ea, type: 3}
   m_Name: TableManager
   m_EditorClassIdentifier: 
-  appleTable: {fileID: 11400000, guid: aa6e6cad4661a494eb9043087a0a4186, type: 2}
   burgerTable: {fileID: 11400000, guid: 90ac0abd77eeb6d45b68a3a44a7ace4d, type: 2}
+  appleTable: {fileID: 11400000, guid: aa6e6cad4661a494eb9043087a0a4186, type: 2}
   waterTable: {fileID: 11400000, guid: ed5950159f8a41b4a838fca527481022, type: 2}
-  serveTable: {fileID: 11400000, guid: f72f1e66e51b79e448ec4c094276060b, type: 2}
+  serveTable: {fileID: 11400000, guid: a98e82fecf98ba843b67c305260fcefa, type: 2}

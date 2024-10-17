@@ -16,6 +16,6 @@ MonoBehaviour:
   foodType: 1
   cookingTime: 0
   tablePrefab: {fileID: 1802958185799799984, guid: cdc3a1d2625228149b2726dc5300aa1b, type: 3}
-  processTime: 1
+  processTime: 3
   isDone: 0
   showDebugGizmos: 1

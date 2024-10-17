@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tableName: Apple
   foodType: 2
-  cookingTime: 0
+  cookingTime: 3
   tablePrefab: {fileID: 5570135886753984724, guid: 5154eae639d826549b6ce0b473a9f07a, type: 3}
   processTime: 1
   isDone: 0
