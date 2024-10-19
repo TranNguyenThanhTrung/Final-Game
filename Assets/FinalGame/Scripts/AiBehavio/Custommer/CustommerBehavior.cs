@@ -25,7 +25,8 @@ public class CustommerBehavior : MonoBehaviour
     private Node.NodeState treeStatus = Node.NodeState.RUNNING;
     public ActionState state = ActionState.Idle;
 
-
+    public GameObject frontDoor;
+    public GameObject emtyChair;
     public bool isEmtyChair;
     public bool isServed;
 
@@ -67,6 +68,7 @@ public class CustommerBehavior : MonoBehaviour
     private Node.NodeState GoToFrontDoor()
     {
         Debug.Log("Dang di toi cua chinh");
+        GoToLocation(frontDoor.transform.position);
         return Node.NodeState.SUCCESS;
     }
 
@@ -75,6 +77,7 @@ public class CustommerBehavior : MonoBehaviour
         if (isEmtyChair == true)
         {
             Debug.Log("Dang tien toi ghe");
+            GoToLocation(emtyChair.transform.position);
             return Node.NodeState.SUCCESS;
         }
         else
