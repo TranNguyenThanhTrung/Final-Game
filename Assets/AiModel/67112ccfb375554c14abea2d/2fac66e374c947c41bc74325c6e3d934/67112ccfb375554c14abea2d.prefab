@@ -2616,7 +2616,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8785874535322954129}
   - component: {fileID: 7796588169412154084}
-  - component: {fileID: 6753286743880997636}
   m_Layer: 0
   m_Name: 67112ccfb375554c14abea2d
   m_TagString: Untagged
@@ -2669,23 +2668,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6753286743880997636
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7224602972771963138}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 247fc36ca2524089b3dc351f824e6a3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AvatarId: 67112ccfb375554c14abea2d
-  AvatarMetadata:
-    BodyType: 1
-    OutfitGender: 2
-    SkinTone: '#da8664'
 --- !u!1 &7289039911747867776
 GameObject:
   m_ObjectHideFlags: 0

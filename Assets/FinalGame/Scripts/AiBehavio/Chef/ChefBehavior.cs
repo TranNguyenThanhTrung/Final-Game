@@ -27,7 +27,7 @@ public class ChefBehavior : MonoBehaviour
     private BehaviorTree tree;
     private NavMeshAgent agent;
 
-    private Node.NodeState treeStatus = Node.NodeState.RUNNING;
+    //private Node.NodeState treeStatus = Node.NodeState.RUNNING;
     public ActionState state = ActionState.Idle;
 
     private Node InitializeBehaviorTree()

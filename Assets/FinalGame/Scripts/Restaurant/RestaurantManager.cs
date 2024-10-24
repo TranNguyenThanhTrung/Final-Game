@@ -1,30 +1,153 @@
-using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
+using System;
 
 public class RestaurantManager : MonoBehaviour
 {
-    public int Level { get; private set; }
-    public decimal Money { get; private set; }
-    public List<Table> Tables { get; private set; }
-    public List<Staff> Staff { get; private set; }
-    public Queue<Order> CurrentOrders { get; private set; }
+    private static RestaurantManager instance;
+    public static RestaurantManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<RestaurantManager>();
+            }
+            return instance;
+        }
+    }
 
-    private void ProcessOrders() { }
-    private void CheckLevelUp() { }
-    public void UnlockTable(int tableIndex) { }
-   // public void AddMenuItem(MenuItem item) { }
-    public void HireStaff(Staff newStaff) { }
+    [SerializeField]
+    private List<Seat> availableTables = new List<Seat>();
+    private Queue<Order> pendingOrders = new Queue<Order>();
+    private List<Order> activeOrders = new List<Order>();
+
+    // Properties
+    public int Level { get; private set; } = 1;
+    public decimal Money { get; private set; } = 1000;
+    public List<Staff> Staff { get; private set; } = new List<Staff>();
+
+    // Events
+    public event Action<Order> OnOrderReceived;
+    public event Action<Order> OnOrderCompleted;
+    public event Action<decimal> OnMoneyChanged;
+    public event Action<Seat> OnTableStatusChanged;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
-        
+        InitializeTables();
     }
 
-    // Update is called once per frame
+    private void InitializeTables()
+    {
+        availableTables.Clear();
+        availableTables.AddRange(FindObjectsOfType<Seat>());
+
+        // Subscribe to table status changes
+        foreach (var table in availableTables)
+        {
+            table.OnSeatStatusChanged += () => OnTableStatusChanged?.Invoke(table);
+        }
+    }
+
+    // Table Management
+    public Seat FindNearestAvailableTable(Vector3 position)
+    {
+        Seat nearestTable = null;
+        float shortestDistance = float.MaxValue;
+
+        foreach (var table in availableTables)
+        {
+            if (table.AvailableChair)
+            {
+                float distance = table.GetDistanceToSeat(position);
+                if (distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    nearestTable = table;
+                }
+            }
+        }
+
+        return nearestTable;
+    }
+
+    // Order Management
+    public void SubmitOrder(CustommerBehavior customer, Dish dish)
+    {
+        Order newOrder = new Order
+        {
+            Customer = customer,
+            OrderedDish = dish,
+            OrderTime = Time.time
+        };
+
+        pendingOrders.Enqueue(newOrder);
+        OnOrderReceived?.Invoke(newOrder);
+        Debug.Log($"New order received: {dish} from table {customer.chair.GetInstanceID()}");
+    }
+
+    public void CompleteOrder(Order order)
+    {
+        if (activeOrders.Contains(order))
+        {
+            activeOrders.Remove(order);
+            OnOrderCompleted?.Invoke(order);
+
+            // Add payment to restaurant money
+            AddMoney(CalculateOrderPrice(order));
+        }
+    }
+
+    // Money Management
+    private void AddMoney(decimal amount)
+    {
+        Money += amount;
+        OnMoneyChanged?.Invoke(Money);
+    }
+
+    private decimal CalculateOrderPrice(Order order)
+    {
+        // Implement your pricing logic here
+        return 10.0m; // Placeholder price
+    }
+
     void Update()
     {
-        
+        ProcessPendingOrders();
+    }
+
+    private void ProcessPendingOrders()
+    {
+        while (pendingOrders.Count > 0)
+        {
+            var order = pendingOrders.Dequeue();
+            activeOrders.Add(order);
+            // Additional processing logic here
+        }
+    }
+
+    // Debug Methods
+    public void DebugPrintStatus()
+    {
+        Debug.Log($"Restaurant Status:");
+        Debug.Log($"Level: {Level}");
+        Debug.Log($"Money: ${Money}");
+        Debug.Log($"Active Tables: {availableTables.Count}");
+        Debug.Log($"Pending Orders: {pendingOrders.Count}");
+        Debug.Log($"Active Orders: {activeOrders.Count}");
     }
 }

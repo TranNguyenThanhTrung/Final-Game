@@ -2,7 +2,7 @@
 //using static ChefBehavior;
 //// TableManager.cs (đã có từ trước)
 
-//[CreateAssetMenu(fileName = "NewTableData", menuName = "Restaurant/Table Data")]
+//[CreateAssetMenu(fileName = "NewTableData", menuName = "Restaurant/Seat Data")]
 //public class TableData : ScriptableObject
 //{
 

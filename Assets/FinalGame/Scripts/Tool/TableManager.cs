@@ -1,7 +1,7 @@
 ﻿//using UnityEngine;
 //using static ChefBehavior;
 //// TableManager.cs (đã có từ trước)
-//[CreateAssetMenu(fileName = "TableManager", menuName = "Restaurant/Table Manager")]
+//[CreateAssetMenu(fileName = "TableManager", menuName = "Restaurant/Seat Manager")]
 //public class TableManager : ScriptableObject
 //{
 //    public TableData burgerTable;
