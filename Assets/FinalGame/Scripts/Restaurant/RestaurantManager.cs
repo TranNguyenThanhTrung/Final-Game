@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class RestaurantManager : MonoBehaviour
 {
@@ -97,7 +98,7 @@ public class RestaurantManager : MonoBehaviour
 
         pendingOrders.Enqueue(newOrder);
         OnOrderReceived?.Invoke(newOrder);
-        Debug.Log($"New order received: {dish} from table {customer.chair.GetInstanceID()}");
+       
     }
 
     public void CompleteOrder(Order order)
@@ -138,6 +139,26 @@ public class RestaurantManager : MonoBehaviour
             activeOrders.Add(order);
             // Additional processing logic here
         }
+    }
+    public List<Seat> GetAllAvailableSeats()
+    {
+        return availableTables.Where(table => table.AvailableChair).ToList();
+    }
+
+    public Seat FindBestAvailableTable(Vector3 position, float maxDistance = float.MaxValue)
+    {
+        var availableSeats = GetAllAvailableSeats();
+        if (availableSeats.Count == 0) return null;
+
+        return availableSeats
+            .Where(seat => seat.GetDistanceToSeat(position) <= maxDistance)
+            .OrderBy(seat => seat.GetDistanceToSeat(position))
+            .FirstOrDefault();
+    }
+
+    public bool HasAvailableSeats()
+    {
+        return availableTables.Any(table => table.AvailableChair);
     }
 
     // Debug Methods
