@@ -148,14 +148,14 @@ public class CustommerBehavior : MonoBehaviour
         // Tìm ghế gần nhất thông qua Restaurant Manager
         Seat nearestChair = RestaurantManager.Instance.FindNearestAvailableTable(transform.position);
 
-        if (nearestChair != null)
+        if (nearestChair != null && nearestChair.TryOccupySeat(this)) // Thêm việc chiếm ghế ngay tại đây
         {
             chair = nearestChair;
-            Debug.Log($"Tìm thấy ghế trống tại {chair.transform.position}");
+            Debug.Log($"Tìm thấy và đã chiếm ghế trống tại {chair.transform.position}");
             return Node.NodeState.SUCCESS;
         }
 
-        Debug.Log("Không tìm thấy ghế trống - Chuẩn bị rời đi");
+        Debug.Log("Không tìm thấy ghế trống hoặc không thể chiếm ghế - Chuẩn bị rời đi");
         return Node.NodeState.FAILURE;
     }
 
@@ -165,25 +165,6 @@ public class CustommerBehavior : MonoBehaviour
         {
             Debug.LogError("GoToEmptyChair: Không có ghế để đi tới!");
             return Node.NodeState.FAILURE;
-        }
-
-        if (!chair.AvailableChair)
-        {
-            Debug.LogWarning("GoToEmptyChair: Ghế không còn trống!");
-            chair = null;
-            return Node.NodeState.FAILURE;
-        }
-
-        // Cố gắng chiếm ghế nếu chưa chiếm
-        if (state == ActionState.Idle)
-        {
-            if (!chair.TryOccupySeat(this))
-            {
-                Debug.LogWarning("GoToEmptyChair: Không thể chiếm ghế!");
-                chair = null;
-                return Node.NodeState.FAILURE;
-            }
-            Debug.Log($"GoToEmptyChair: Đã chiếm ghế {chair.gameObject.name}, bắt đầu di chuyển");
         }
 
         // Thực hiện di chuyển
