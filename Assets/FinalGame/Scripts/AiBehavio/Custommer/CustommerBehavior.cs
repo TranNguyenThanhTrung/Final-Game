@@ -1,236 +1,326 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
-
+using System;
+using System.Collections.Generic;
 
 public class CustommerBehavior : MonoBehaviour
 {
-    public enum ActionState
+    #region Constants
+    private const float MAX_STUCK_TIME = 3.0f;
+    private const float ORDER_WAIT_TIME = 5f;
+    private const float PAYMENT_TIME = 3f;
+    private const float ARRIVAL_THRESHOLD = 0.5f;
+    private const float MOVEMENT_THRESHOLD = 0.1f;
+    #endregion
+
+    #region SerializeFields
+    [Header("Navigation Points")]
+    [SerializeField] private GameObject frontDoor;
+    [SerializeField] private GameObject dispawnPos;
+    [SerializeField] private GameObject spawnPos;
+
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private float animationBlendSpeed = 0.1f;
+    [SerializeField] private float seatTriggerDistance = 1.5f;
+    [SerializeField] private float rotationSpeed = 10f;
+    #endregion
+
+    #region Animation Parameters
+    private static readonly int IsWalking = Animator.StringToHash("IsWalking");
+    private static readonly int IsSitting = Animator.StringToHash("IsSitting");
+    private static readonly int MovementSpeed = Animator.StringToHash("MovementSpeed");
+    private static readonly int SitTrigger = Animator.StringToHash("Sit");
+    private static readonly int StandTrigger = Animator.StringToHash("Stand");
+    #endregion
+
+    #region State Management
+    public enum CustomerState
     {
         Idle,
+        Walking,
+        Sitting,
+        Eating,
+        Leaving,
         Working
     }
-    public ActionState state = ActionState.Idle;
-    private List<Seat> availableSeats = new List<Seat>();
 
-    private NavMeshAgent agent;
-    private BehaviorTree tree;
-    private Order order;
-    private Seat chair;
-    public GameObject frontDoor, dispawnPos, spawnPos;
+    public CustomerState CurrentState { get; private set; } = CustomerState.Idle;
+    public Dish CurrentOrder { get; private set; }
+    public float CurrentWaitTime { get; private set; } = 3f;
+    #endregion
 
-    private bool isEmtyChair;
-    private bool isServed;
-    private bool doingState = true;
-    private bool ordered = false;
-    private bool isWaitingForFood = false;
-    private bool isProcessingPayment = false;
-    private bool hasReachedFrontDoor = false;
-    private bool isMoving = false;
+    #region Private Fields
+    private NavMeshAgent _agent;
+    private BehaviorTree _tree;
+    private Seat _currentSeat;
 
+    private bool _hasReachedFrontDoor;
+    private bool _hasOrdered;
+    private bool _isWaitingForFood;
+    private bool _isServed;
+    private bool _isRotatingToTable;
+    private float _timeStuck;
+    private float _currentMovementBlend;
+    #endregion
 
-    private const float maxStuckTime = 3.0f;
-    private const float MAX_SEAT_SEARCH_DISTANCE = 20f; // Khoảng cách tối đa để tìm ghế
-    private float timeStuck = 0;
-    private float orderWaitTime = 5f; // Thời gian chờ đồ ăn
-    private float paymentTime = 3f; // Thời gian để thanh toán
-    public float currentWaitTime = 3f;
-
-    public Dish currentOrder;
-
+    #region Unity Lifecycle
     private void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
-        if (agent == null)
-        {
-            Debug.LogError("NavMeshAgent không tìm thấy trên Customer!");
-        }
+        InitializeComponents();
     }
+
     private void Start()
     {
-        chair = GetComponent<Seat>();
-        Node customerBTRoot = InitializeBehaviorTree();
-        tree = new BehaviorTree(customerBTRoot);
+        InitializeBehaviorTree();
     }
+
     private void Update()
     {
-        if (agent.hasPath && state == ActionState.Working)
-        {
-            Debug.DrawLine(transform.position, agent.destination, Color.yellow);
-        }
+        UpdateAnimations();
+        DrawDebugPath();
+        _tree.Update();
+    }
+    #endregion
 
-        tree.Update();
+    #region Initialization
+    private void InitializeComponents()
+    {
+        _agent = GetComponent<NavMeshAgent>();
+        if (_agent == null)
+        {
+            Debug.LogError($"[{nameof(CustommerBehavior)}] NavMeshAgent component missing!");
+        }
     }
 
-
-
-    private Node InitializeBehaviorTree()
+    private void InitializeBehaviorTree()
     {
-        Leaf goToFrontDoor = new Leaf(GoToFrontDoor);
-        Leaf goToEmptyChair = new Leaf(GoToEmptyChair);
-        Leaf checkForAvailableChair = new Leaf(CheckForAvailableChair);
-        Leaf isWaiting = new Leaf(IsWaiting);
-        Leaf oderFood = new Leaf(OrderFood);
-        Leaf processPayment = new Leaf(Pay);
-        Leaf leaveRestaurant = new Leaf(LeaveRestaurant);
+        Node rootNode = CreateBehaviorTree();
+        _tree = new BehaviorTree(rootNode);
+    }
 
-        Sequence hasBeenServed = new Sequence(new List<Node> 
-        { 
-            processPayment,
-            leaveRestaurant 
-        });
-        Sequence notBeenServed = new Sequence(new List<Node> 
-        { 
-            isWaiting 
-        });
-
-        Selector orderCheck = new Selector(new List<Node>
-        { 
-            hasBeenServed,
-            notBeenServed 
-        });
-
-        Sequence findAndSitSequence = new Sequence(new List<Node>
+    private Node CreateBehaviorTree()
+    {
+        var enterRestaurant = new Sequence(new List<Node>
         {
-            checkForAvailableChair,
-            goToEmptyChair,
-            oderFood,
-            orderCheck
-        });
-        Sequence noChairSequence = new Sequence(new List<Node> 
-        {
-            leaveRestaurant
-        });
-        Selector chairAvailability = new Selector(new List<Node> {
-            findAndSitSequence,   // Nếu có ghế -> thực hiện quy trình có ghế
-            noChairSequence    // Nếu không có ghế -> rời đi
-        });
-        Sequence enterRestaurant = new Sequence(new List<Node>
-        {
-            goToFrontDoor,
-            chairAvailability
+            new Leaf(GoToFrontDoor),
+            new Selector(new List<Node>
+            {
+                CreateSeatingSequence(),
+                new Leaf(LeaveRestaurant)
+            })
         });
 
         return enterRestaurant;
     }
 
+    private Node CreateSeatingSequence()
+    {
+        return new Sequence(new List<Node>
+        {
+            new Leaf(FindAvailableSeat),
+            new Leaf(GoToSeat),
+            new Leaf(OrderFood),
+            CreateOrderCheckSelector()
+        });
+    }
+
+    private Node CreateOrderCheckSelector()
+    {
+        return new Selector(new List<Node>
+        {
+            new Sequence(new List<Node>
+            {
+                new Leaf(ProcessPayment),
+                new Leaf(LeaveRestaurant)
+            }),
+            new Leaf(WaitForOrder)
+        });
+    }
+    #endregion
+
+    #region Animation Management
+    private void UpdateAnimations()
+    {
+        // Update movement animation
+        float targetBlend = _agent.velocity.magnitude / _agent.speed;
+        _currentMovementBlend = Mathf.Lerp(_currentMovementBlend, targetBlend, animationBlendSpeed);
+        animator.SetFloat(MovementSpeed, _currentMovementBlend);
+
+        // Update walking state
+        bool isMoving = _agent.velocity.magnitude > MOVEMENT_THRESHOLD;
+        animator.SetBool(IsWalking, isMoving);
+    }
+
+    private void PlaySitAnimation()
+    {
+        animator.SetTrigger(SitTrigger);
+        animator.SetBool(IsSitting, true);
+    }
+
+    private void PlayStandAnimation()
+    {
+        animator.SetTrigger(StandTrigger);
+        animator.SetBool(IsSitting, false);
+    }
+
+    
+    #endregion
+
+    #region Behavior Tree Actions
     private Node.NodeState GoToFrontDoor()
     {
-        if (hasReachedFrontDoor) return Node.NodeState.SUCCESS;
+        if (_hasReachedFrontDoor) return Node.NodeState.SUCCESS;
 
-        Debug.Log("Đang di chuyển tới cửa chính");
-        Node.NodeState moveState = GoToLocation(frontDoor.transform.position);
-
+        var moveState = MoveTo(frontDoor.transform.position);
         if (moveState == Node.NodeState.SUCCESS)
         {
-            hasReachedFrontDoor = true;
-            Debug.Log("Đã đến cửa chính - Tiếp tục tìm ghế");
+            _hasReachedFrontDoor = true;
+            Debug.Log("Reached front door - Proceeding to find seat");
         }
 
         return moveState;
     }
 
-    private Node.NodeState CheckForAvailableChair()
+    private Node.NodeState FindAvailableSeat()
     {
-        Debug.Log("Đang kiểm tra ghế trống...");
+        ReleasePreviousSeat();
 
-        // Đảm bảo ghế cũ đã được giải phóng
-        if (chair != null)
+        var nearestSeat = RestaurantManager.Instance.FindNearestAvailableTable(transform.position);
+        if (nearestSeat != null && nearestSeat.TryOccupySeat(this))
         {
-            chair.ReleaseSeat();
-            chair = null;
-        }
-
-        // Tìm ghế gần nhất thông qua Restaurant Manager
-        Seat nearestChair = RestaurantManager.Instance.FindNearestAvailableTable(transform.position);
-
-        if (nearestChair != null && nearestChair.TryOccupySeat(this)) // Thêm việc chiếm ghế ngay tại đây
-        {
-            chair = nearestChair;
-            Debug.Log($"Tìm thấy và đã chiếm ghế trống tại {chair.transform.position}");
+            _currentSeat = nearestSeat;
+            Debug.Log($"Found and occupied seat at {_currentSeat.transform.position}");
             return Node.NodeState.SUCCESS;
         }
 
-        Debug.Log("Không tìm thấy ghế trống hoặc không thể chiếm ghế - Chuẩn bị rời đi");
+        Debug.Log("No available seats found - Preparing to leave");
         return Node.NodeState.FAILURE;
     }
 
-    private Node.NodeState GoToEmptyChair()
+    private Node.NodeState GoToSeat()
     {
-        if (chair == null)
+        float distanceToSeat = Vector3.Distance(transform.position, _currentSeat.transform.position);
+        var moveState = MoveTo(_currentSeat.transform.position);
+        if (_currentSeat == null)
         {
-            Debug.LogError("GoToEmptyChair: Không có ghế để đi tới!");
+            Debug.LogError("GoToSeat: No seat assigned!");
             return Node.NodeState.FAILURE;
         }
 
-        // Thực hiện di chuyển
-        Node.NodeState moveState = GoToLocation(chair.transform.position);
+        if (distanceToSeat <= seatTriggerDistance)
+        {
+            // Dịch chuyển người chơi lên ghế
+            TeleportToSeat();
+
+            // Bắt đầu xoay về phía bàn
+            StartRotatingTowardsTable();
+
+            CurrentState = CustomerState.Sitting;
+            PlaySitAnimation();
+            return Node.NodeState.SUCCESS;
+        }
 
         switch (moveState)
         {
             case Node.NodeState.SUCCESS:
-                Debug.Log("GoToEmptyChair: Đã đến ghế thành công");
-                state = ActionState.Idle;
+                Debug.Log("Successfully reached seat");
+                PlaySitAnimation();
+                CurrentState = CustomerState.Sitting;
                 return Node.NodeState.SUCCESS;
 
             case Node.NodeState.FAILURE:
-                Debug.LogWarning("GoToEmptyChair: Di chuyển thất bại - giải phóng ghế");
-                if (chair != null)
-                {
-                    chair.ReleaseSeat();
-                    chair = null;
-                }
-                state = ActionState.Idle;
+                Debug.LogWarning("Failed to reach seat - releasing reservation");
+                ReleasePreviousSeat();
+                CurrentState = CustomerState.Idle;
                 return Node.NodeState.FAILURE;
 
             default:
                 return Node.NodeState.RUNNING;
         }
     }
+    private void TeleportToSeat()
+    {
+        // Tắt NavMeshAgent để có thể teleport
+        _agent.enabled = false;
+
+        // Dịch chuyển người chơi đến đúng vị trí ghế
+        transform.position = _currentSeat.transform.position;
+
+        // Bật lại NavMeshAgent
+        _agent.enabled = true;
+    }
+    private void StartRotatingTowardsTable()
+    {
+        if (_currentSeat.TableTransform != null)
+        {
+            _isRotatingToTable = true;
+            StartCoroutine(RotateTowardsTable());
+        }
+    }
+    private System.Collections.IEnumerator RotateTowardsTable()
+    {
+        // Lấy hướng của bàn từ ghế
+        Vector3 targetDirection = _currentSeat.TableTransform.forward;
+
+        while (_isRotatingToTable)
+        {
+            // Tính toán góc xoay hiện tại
+            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+
+            // Xoay mượt về hướng bàn
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime
+            );
+
+            // Kiểm tra nếu đã xoay gần đúng hướng
+            if (Quaternion.Angle(transform.rotation, targetRotation) < 0.1f)
+            {
+                transform.rotation = targetRotation;
+                _isRotatingToTable = false;
+            }
+
+            yield return null;
+        }
+    }
 
     private Node.NodeState OrderFood()
     {
-        if (!ordered)
+        if (!_hasOrdered)
         {
-            currentOrder = (Dish)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(Dish)).Length);
-            Debug.Log($"Gọi món: {currentOrder}");
+            CurrentOrder = (Dish)UnityEngine.Random.Range(0, Enum.GetValues(typeof(Dish)).Length);
+            Debug.Log($"Ordering: {CurrentOrder}");
 
-            // Gửi order thông qua RestaurantManager
-            RestaurantManager.Instance.SubmitOrder(this, currentOrder);
+            RestaurantManager.Instance.SubmitOrder(this, CurrentOrder);
 
-            ordered = true;
-            isWaitingForFood = true;
-            currentWaitTime = 0f;
+            _hasOrdered = true;
+            _isWaitingForFood = true;
+            CurrentWaitTime = 0f;
             return Node.NodeState.RUNNING;
         }
         return Node.NodeState.SUCCESS;
     }
 
-    private Node.NodeState IsWaiting()
+    private Node.NodeState WaitForOrder()
     {
-        if (isWaitingForFood)
+        if (!_isWaitingForFood) return Node.NodeState.SUCCESS;
+
+        if (CurrentWaitTime >= ORDER_WAIT_TIME)
         {
-            if (currentWaitTime >= orderWaitTime)
-            {
-                isWaitingForFood = false;
-                isServed = true;
-                return Node.NodeState.SUCCESS;
-            }
-            return Node.NodeState.RUNNING;
+            _isWaitingForFood = false;
+            _isServed = true;
+            return Node.NodeState.SUCCESS;
         }
-        return Node.NodeState.SUCCESS;
+        return Node.NodeState.RUNNING;
     }
 
-    private Node.NodeState Pay()
+    private Node.NodeState ProcessPayment()
     {
-        if (isServed)
+        if (_isServed)
         {
-            Debug.Log("Đang tính tiền");
-            // RestaurantManager sẽ tự động xử lý thanh toán khi order complete
+            PlayStandAnimation();
             return Node.NodeState.SUCCESS;
         }
         return Node.NodeState.FAILURE;
@@ -238,102 +328,157 @@ public class CustommerBehavior : MonoBehaviour
 
     private Node.NodeState LeaveRestaurant()
     {
-        if (chair != null)
-        {
-            chair.ReleaseSeat();
-            chair = null;
-        }
+        ReleasePreviousSeat();
+        CurrentState = CustomerState.Leaving;
 
-        Debug.Log("Đang rời nhà hàng");
-        Node.NodeState moveState = GoToLocation(dispawnPos.transform.position);
-
+        var moveState = MoveTo(dispawnPos.transform.position);
         if (moveState == Node.NodeState.SUCCESS)
         {
-            Debug.Log("Đã đến điểm rời đi - Hủy object");
+            Debug.Log("Reached exit point - Destroying object");
             Destroy(gameObject);
         }
 
         return moveState;
     }
+    #endregion
 
-
-
-    private Node.NodeState GoToLocation(Vector3 destination)
+    #region Navigation
+    private Node.NodeState MoveTo(Vector3 destination)
     {
         float distanceToTarget = Vector3.Distance(transform.position, destination);
 
-        if (state == ActionState.Idle)
+        if (CurrentState == CustomerState.Idle)
         {
-            Debug.Log($"Bắt đầu di chuyển đến {destination}");
-            agent.SetDestination(destination);
-            state = ActionState.Working;
+            Debug.Log($"Starting movement to {destination}");
+            _agent.SetDestination(destination);
+            CurrentState = CustomerState.Working;
         }
 
-        // Kiểm tra path
-        if (!agent.hasPath)
+        if (!_agent.hasPath)
         {
-            Debug.LogWarning("Không tìm thấy đường đi!");
-            state = ActionState.Idle;
+            Debug.LogWarning("No valid path found!");
+            CurrentState = CustomerState.Idle;
             return Node.NodeState.FAILURE;
         }
 
-        // Kiểm tra đến nơi
-        if (distanceToTarget < 0.5f)
+        if (distanceToTarget < ARRIVAL_THRESHOLD)
         {
-            Debug.Log($"Đã đến điểm đích {destination}");
-            state = ActionState.Idle;
+            Debug.Log($"Reached destination {destination}");
+            CurrentState = CustomerState.Idle;
             return Node.NodeState.SUCCESS;
         }
 
-        // Kiểm tra bị kẹt
-        if (agent.velocity.magnitude < 0.01f && state == ActionState.Working)
+        return HandleStuckDetection();
+    }
+
+    private Node.NodeState HandleStuckDetection()
+    {
+        if (_agent.velocity.magnitude < 0.01f && CurrentState == CustomerState.Working)
         {
-            timeStuck += Time.deltaTime;
-            if (timeStuck > maxStuckTime)
+            _timeStuck += Time.deltaTime;
+            if (_timeStuck > MAX_STUCK_TIME)
             {
-                Debug.LogWarning("Agent bị kẹt quá lâu!");
-                state = ActionState.Idle;
-                timeStuck = 0;
+                Debug.LogWarning("Agent stuck for too long!");
+                CurrentState = CustomerState.Idle;
+                _timeStuck = 0;
                 return Node.NodeState.FAILURE;
             }
         }
         else
         {
-            timeStuck = 0;
+            _timeStuck = 0;
         }
 
         return Node.NodeState.RUNNING;
     }
+    #endregion
+
+    #region Public Methods
     public void ResetState()
     {
-        hasReachedFrontDoor = false;
-        isMoving = false;
-        state = ActionState.Idle;
-        if (agent != null) agent.ResetPath();
+        _hasReachedFrontDoor = false;
+        CurrentState = CustomerState.Idle;
+        _agent?.ResetPath();
     }
+    #endregion
+
+    #region Private Helper Methods
+    private void ReleasePreviousSeat()
+    {
+        if (_currentSeat != null)
+        {
+            _currentSeat.ReleaseSeat();
+            _currentSeat = null;
+        }
+    }
+
+    private void DrawDebugPath()
+    {
+        if (_agent.hasPath && CurrentState == CustomerState.Working)
+        {
+            Debug.DrawLine(transform.position, _agent.destination, Color.yellow);
+        }
+    }
+    #endregion
+
+    #region Debug Visualization
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        // Vẽ đường đi hiện tại
-        if (agent != null && agent.hasPath)
+        DrawPathGizmos();
+        DrawSeatGizmos();
+    }
+
+    private void DrawPathGizmos()
+    {
+        if (_agent != null && _agent.hasPath)
         {
             Gizmos.color = Color.yellow;
-            var path = agent.path;
             Vector3 previousCorner = transform.position;
-            foreach (var corner in path.corners)
+            foreach (var corner in _agent.path.corners)
             {
                 Gizmos.DrawLine(previousCorner, corner);
                 previousCorner = corner;
             }
         }
+    }
 
-        // Vẽ đường đến ghế đã chọn
-        if (chair != null)
+    private void DrawSeatGizmos()
+    {
+        if (_currentSeat != null)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, chair.transform.position);
-            Gizmos.DrawWireSphere(chair.transform.position, 0.5f);
+            Gizmos.DrawLine(transform.position, _currentSeat.transform.position);
+            Gizmos.DrawWireSphere(_currentSeat.transform.position, 0.5f);
         }
     }
 #endif
+    #endregion
+
+    #region State Transitions
+    private void TransitionToState(CustomerState newState)
+    {
+        // Exit current state
+        switch (CurrentState)
+        {
+            case CustomerState.Sitting:
+                PlayStandAnimation();
+                break;
+        }
+
+        // Enter new state
+        switch (newState)
+        {
+            case CustomerState.Walking:
+                animator.SetBool(IsWalking, true);
+                break;
+            case CustomerState.Sitting:
+                PlaySitAnimation();
+                break;
+                
+        }
+
+        CurrentState = newState;
+    }
+    #endregion
 }

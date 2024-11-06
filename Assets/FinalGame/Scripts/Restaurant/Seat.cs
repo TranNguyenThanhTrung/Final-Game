@@ -3,11 +3,18 @@ using System.Collections.Generic;
 
 public class Seat : MonoBehaviour
 {
-    [SerializeField]
-    private bool availableChair = true;
-    private CustommerBehavior currentCustomer;
+    [SerializeField]private bool availableChair = true;
+    [SerializeField] private CustommerBehavior currentCustomer;
+    [SerializeField] private Transform tableTransform; // Reference đến bàn
+    [SerializeField] private Transform sitPosition;
+    [SerializeField] private Vector3 seatRotation = Vector3.zero;
 
-    // Property để kiểm tra và thay đổi trạng thái ghế
+    public Vector3 SitPosition => sitPosition != null ? sitPosition.position : transform.position;
+
+    public Quaternion TargetRotation => Quaternion.Euler(seatRotation);
+
+    public Transform TableTransform => tableTransform;
+
     public bool AvailableChair
     {
         get { return availableChair; }
@@ -21,6 +28,17 @@ public class Seat : MonoBehaviour
     // Event để thông báo khi trạng thái ghế thay đổi
     public delegate void SeatStatusChanged();
     public event SeatStatusChanged OnSeatStatusChanged;
+    private void OnValidate()
+    {
+        // Tự động tạo sitPosition nếu chưa có
+        if (sitPosition == null)
+        {
+            GameObject sitPos = new GameObject("SitPosition");
+            sitPos.transform.parent = transform;
+            sitPos.transform.localPosition = Vector3.zero;
+            sitPosition = sitPos.transform;
+        }
+    }
 
     // Kiểm tra và đặt ghế cho khách
     public bool TryOccupySeat(CustommerBehavior customer)
