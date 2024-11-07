@@ -5,7 +5,7 @@ public class Seat : MonoBehaviour
 {
     [SerializeField]private bool availableChair = true;
     [SerializeField] private CustommerBehavior currentCustomer;
-    [SerializeField] private Transform tableTransform; // Reference đến bàn
+    [SerializeField] private Transform chairTransform; // Reference đến bàn
     [SerializeField] private Transform sitPosition;
     [SerializeField] private Vector3 seatRotation = Vector3.zero;
 
@@ -13,8 +13,12 @@ public class Seat : MonoBehaviour
 
     public Quaternion TargetRotation => Quaternion.Euler(seatRotation);
 
-    public Transform TableTransform => tableTransform;
+    public Transform TableTransform => chairTransform;
 
+    private void Awake()
+    {
+        chairTransform = gameObject.GetComponent<Transform>();
+    }
     public bool AvailableChair
     {
         get { return availableChair; }
