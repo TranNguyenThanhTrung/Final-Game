@@ -8015,7 +8015,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   customerPrefabs:
   - prefab: {fileID: 7219871736313822743, guid: 92a2ba3114fd821469b60a4c3b6ea4e0, type: 3}
-    spawnWeight: 1
+    spawnWeight: 2
   - prefab: {fileID: 1372116130451653528, guid: 0639f8dd18b03cc479f5734ca32e6e30, type: 3}
     spawnWeight: 1
   useSpawnWeights: 1

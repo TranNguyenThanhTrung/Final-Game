@@ -43,6 +43,7 @@ public class CustomerSpawner : MonoBehaviour
     // Cache cho hệ thống weight
     private float totalWeight;
     private List<float> cumulativeWeights;
+    private Coroutine spawnCoroutine;
 
     private void Awake()
     {
@@ -69,18 +70,37 @@ public class CustomerSpawner : MonoBehaviour
         // Đăng ký lắng nghe sự kiện khi số lượng ghế thay đổi
         RestaurantManager.OnSeatsChanged += OnSeatsUpdated;
     }
-
+    private void StartSpawnRoutine()
+    {
+        // Nếu đã có coroutine đang chạy, không start cái mới
+        if (spawnCoroutine == null && !isSpawning)
+        {
+            spawnCoroutine = StartCoroutine(SpawnRoutine());
+        }
+    }
     private void OnDisable()
     {
-        // Hủy đăng ký lắng nghe khi component bị disable
-        RestaurantManager.OnSeatsChanged -= OnSeatsUpdated;
+        if (restaurantManager != null)
+        {
+            RestaurantManager.OnSeatsChanged -= OnSeatsUpdated;
+        }
+
+        // Đảm bảo dừng spawn routine khi component bị disable
+        if (spawnCoroutine != null)
+        {
+            StopCoroutine(spawnCoroutine);
+            spawnCoroutine = null;
+            isSpawning = false;
+        }
     }
     private void OnSeatsUpdated()
     {
-        // Kiểm tra nếu có ghế trống và đang không spawn
-        if (restaurantManager.HasAvailableSeats())
+        if (restaurantManager == null) return;
+
+        // Chỉ start spawn routine mới nếu chưa có routine nào đang chạy
+        if (restaurantManager.HasAvailableSeats() && !isSpawning)
         {
-            StartCoroutine(SpawnRoutine());
+            StartSpawnRoutine();
         }
     }
     private void ValidateCustomerPrefabs()
@@ -167,7 +187,7 @@ public class CustomerSpawner : MonoBehaviour
     private IEnumerator SpawnRoutine()
     {
         isSpawning = true;
-        while (true)
+        while (isSpawning)
         {
             if (restaurantManager.HasAvailableSeats())
             {
@@ -177,7 +197,6 @@ public class CustomerSpawner : MonoBehaviour
             else
             {
                 // Tạm dừng một chút trước khi kiểm tra lại
-                isSpawning = false;
                 yield return new WaitForSeconds(checkSeatsInterval);
 
                 // Nếu vẫn không có ghế trống, thoát khỏi coroutine
@@ -185,11 +204,9 @@ public class CustomerSpawner : MonoBehaviour
                 {
                     break;
                 }
-
-                // Nếu có ghế trống, tiếp tục spawn
-                isSpawning = true;
             }
         }
+        spawnCoroutine = null;
         isSpawning = false;
     }
 
