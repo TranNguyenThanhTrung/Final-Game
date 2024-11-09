@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class Seat : MonoBehaviour
 {
+    public int seatID;
     [SerializeField]private bool availableChair = true;
     [SerializeField] private CustommerBehavior currentCustomer;
     [SerializeField] private Transform chairTransform; // Reference đến bàn

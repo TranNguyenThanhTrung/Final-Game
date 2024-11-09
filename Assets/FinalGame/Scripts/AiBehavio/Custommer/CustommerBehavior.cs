@@ -165,7 +165,7 @@ public class CustommerBehavior : MonoBehaviour
         animator.SetBool(IsSitting, false);
     }
 
-    
+
     #endregion
 
     #region Behavior Tree Actions
@@ -244,9 +244,20 @@ public class CustommerBehavior : MonoBehaviour
     {
         // Tắt NavMeshAgent để có thể teleport
         _agent.enabled = false;
-
+        switch (_currentSeat.seatID)
+        {
+            case 1:
+                transform.position = _currentSeat.transform.position - new Vector3(0, 0.15f, 0);
+                break;
+            case 2:
+                transform.position = _currentSeat.transform.position - new Vector3(0, 0.4f, 0);
+                break;
+            case 3:
+                transform.position = _currentSeat.transform.position - new Vector3(0, 0, 0);
+                break;
+        }
         // Dịch chuyển người chơi đến đúng vị trí ghế
-        transform.position = _currentSeat.transform.position;
+
 
         // Bật lại NavMeshAgent
         _agent.enabled = true;
@@ -476,7 +487,7 @@ public class CustommerBehavior : MonoBehaviour
             case CustomerState.Sitting:
                 PlaySitAnimation();
                 break;
-                
+
         }
 
         CurrentState = newState;
