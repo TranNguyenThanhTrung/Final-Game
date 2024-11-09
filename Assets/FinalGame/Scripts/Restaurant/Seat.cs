@@ -4,22 +4,11 @@ using System.Collections.Generic;
 public class Seat : MonoBehaviour
 {
     public int seatID;
-    [SerializeField]private bool availableChair = true;
     [SerializeField] private CustommerBehavior currentCustomer;
     [SerializeField] private Transform chairTransform; // Reference đến bàn
     [SerializeField] private Transform sitPosition;
     [SerializeField] private Vector3 seatRotation = Vector3.zero;
-
-    public Vector3 SitPosition => sitPosition != null ? sitPosition.position : transform.position;
-
-    public Quaternion TargetRotation => Quaternion.Euler(seatRotation);
-
-    public Transform TableTransform => chairTransform;
-
-    private void Awake()
-    {
-        chairTransform = gameObject.GetComponent<Transform>();
-    }
+    [SerializeField]private bool availableChair = true;
     public bool AvailableChair
     {
         get { return availableChair; }
@@ -30,12 +19,18 @@ public class Seat : MonoBehaviour
         }
     }
 
-    // Event để thông báo khi trạng thái ghế thay đổi
-    public delegate void SeatStatusChanged();
+    public Vector3 SitPosition => sitPosition != null ? sitPosition.position : transform.position;
+    public Quaternion TargetRotation => Quaternion.Euler(seatRotation);
+    public Transform TableTransform => chairTransform;
     public event SeatStatusChanged OnSeatStatusChanged;
+    public delegate void SeatStatusChanged();
+
+    private void Awake()
+    {
+        chairTransform = gameObject.GetComponent<Transform>();
+    }
     private void OnValidate()
     {
-        // Tự động tạo sitPosition nếu chưa có
         if (sitPosition == null)
         {
             GameObject sitPos = new GameObject("SitPosition");
@@ -44,20 +39,20 @@ public class Seat : MonoBehaviour
             sitPosition = sitPos.transform;
         }
     }
-
     private void OnEnable()
     {
-        // Tự động đăng ký ghế với RestaurantManager khi component được enable
         RestaurantManager.Instance?.RegisterSeat(this);
     }
-
     private void OnDisable()
     {
-        // Hủy đăng ký ghế khi component bị disable
         RestaurantManager.Instance?.UnregisterSeat(this);
     }
-
-    // Kiểm tra và đặt ghế cho khách
+    private void OnDrawGizmos()
+    {
+        // Vẽ visual trong editor để dễ nhìn trạng thái ghế
+        Gizmos.color = AvailableChair ? Color.green : Color.red;
+        Gizmos.DrawWireSphere(transform.position, 0.5f);
+    }
     public bool TryOccupySeat(CustommerBehavior customer)
     {
         if (AvailableChair)
@@ -68,8 +63,6 @@ public class Seat : MonoBehaviour
         }
         return false;
     }
-
-    // Giải phóng ghế
     public void ReleaseSeat()
     {
         if (!AvailableChair)
@@ -78,23 +71,12 @@ public class Seat : MonoBehaviour
             currentCustomer = null;
         }
     }
-
-    // Kiểm tra xem ai đang ngồi ở ghế này
-    public CustommerBehavior GetCurrentCustomer()
-    {
-        return currentCustomer;
-    }
-
-    // Kiểm tra khoảng cách từ một vị trí đến ghế
     public float GetDistanceToSeat(Vector3 position)
     {
         return Vector3.Distance(position, transform.position);
     }
-
-    private void OnDrawGizmos()
+    public CustommerBehavior GetCurrentCustomer()
     {
-        // Vẽ visual trong editor để dễ nhìn trạng thái ghế
-        Gizmos.color = AvailableChair ? Color.green : Color.red;
-        Gizmos.DrawWireSphere(transform.position, 0.5f);
+        return currentCustomer;
     }
 }

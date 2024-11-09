@@ -44,7 +44,6 @@ public class CustommerBehavior : MonoBehaviour
         Leaving,
         Working
     }
-
     public CustomerState CurrentState { get; private set; } = CustomerState.Idle;
     public Dish CurrentOrder { get; private set; }
     public float CurrentWaitTime { get; private set; } = 3f;
@@ -69,12 +68,10 @@ public class CustommerBehavior : MonoBehaviour
     {
         InitializeComponents();
     }
-
     private void Start()
     {
         InitializeBehaviorTree();
     }
-
     private void Update()
     {
         UpdateAnimations();
@@ -104,13 +101,11 @@ public class CustommerBehavior : MonoBehaviour
             Debug.LogError($"[{nameof(CustommerBehavior)}] NavMeshAgent component missing!");
         }
     }
-
     private void InitializeBehaviorTree()
     {
         Node rootNode = CreateBehaviorTree();
         _tree = new BehaviorTree(rootNode);
     }
-
     private Node CreateBehaviorTree()
     {
         var enterRestaurant = new Sequence(new List<Node>
@@ -125,7 +120,6 @@ public class CustommerBehavior : MonoBehaviour
 
         return enterRestaurant;
     }
-
     private Node CreateSeatingSequence()
     {
         return new Sequence(new List<Node>
@@ -136,7 +130,6 @@ public class CustommerBehavior : MonoBehaviour
             CreateOrderCheckSelector()
         });
     }
-
     private Node CreateOrderCheckSelector()
     {
         return new Selector(new List<Node>
@@ -163,20 +156,16 @@ public class CustommerBehavior : MonoBehaviour
         bool isMoving = _agent.velocity.magnitude > MOVEMENT_THRESHOLD;
         animator.SetBool(IsWalking, isMoving);
     }
-
     private void PlaySitAnimation()
     {
         animator.SetTrigger(SitTrigger);
         animator.SetBool(IsSitting, true);
     }
-
     private void PlayStandAnimation()
     {
         animator.SetTrigger(StandTrigger);
         animator.SetBool(IsSitting, false);
     }
-
-
     #endregion
 
     #region Behavior Tree Actions
@@ -190,15 +179,13 @@ public class CustommerBehavior : MonoBehaviour
             _hasReachedFrontDoor = true;
             Debug.Log("Reached front door - Proceeding to find seat");
         }
-
         return moveState;
     }
-
     private Node.NodeState FindAvailableSeat()
     {
         ReleasePreviousSeat();
 
-        var nearestSeat = RestaurantManager.Instance.FindNearestAvailableTable(transform.position);
+        var nearestSeat = RestaurantManager.Instance.FindNearestAvailableSeat(transform.position);
         if (nearestSeat != null && nearestSeat.TryOccupySeat(this))
         {
             _currentSeat = nearestSeat;
@@ -209,7 +196,6 @@ public class CustommerBehavior : MonoBehaviour
         Debug.Log("No available seats found - Preparing to leave");
         return Node.NodeState.FAILURE;
     }
-
     private Node.NodeState GoToSeat()
     {
         float distanceToSeat = Vector3.Distance(transform.position, _currentSeat.transform.position);
@@ -263,14 +249,7 @@ public class CustommerBehavior : MonoBehaviour
             case 2:
                 transform.position = _currentSeat.transform.position - new Vector3(0, 0.4f, 0);
                 break;
-            case 3:
-                transform.position = _currentSeat.transform.position - new Vector3(0, 0, 0);
-                break;
         }
-        // Dịch chuyển người chơi đến đúng vị trí ghế
-
-
-        // Bật lại NavMeshAgent
         _agent.enabled = true;
     }
     private void StartRotatingTowardsTable()
@@ -308,7 +287,6 @@ public class CustommerBehavior : MonoBehaviour
             yield return null;
         }
     }
-
     private Node.NodeState OrderFood()
     {
         if (!_hasOrdered)
@@ -325,7 +303,6 @@ public class CustommerBehavior : MonoBehaviour
         }
         return Node.NodeState.SUCCESS;
     }
-
     private Node.NodeState WaitForOrder()
     {
         if (!_isWaitingForFood) return Node.NodeState.SUCCESS;
@@ -338,7 +315,6 @@ public class CustommerBehavior : MonoBehaviour
         }
         return Node.NodeState.RUNNING;
     }
-
     private Node.NodeState ProcessPayment()
     {
         if (_isServed)
@@ -348,7 +324,6 @@ public class CustommerBehavior : MonoBehaviour
         }
         return Node.NodeState.FAILURE;
     }
-
     private Node.NodeState LeaveRestaurant()
     {
         ReleasePreviousSeat();
@@ -393,7 +368,6 @@ public class CustommerBehavior : MonoBehaviour
 
         return HandleStuckDetection();
     }
-
     private Node.NodeState HandleStuckDetection()
     {
         if (_agent.velocity.magnitude < 0.01f && CurrentState == CustomerState.Working)
@@ -434,7 +408,6 @@ public class CustommerBehavior : MonoBehaviour
             _currentSeat = null;
         }
     }
-
     private void DrawDebugPath()
     {
         if (_agent.hasPath && CurrentState == CustomerState.Working)
@@ -451,7 +424,6 @@ public class CustommerBehavior : MonoBehaviour
         DrawPathGizmos();
         DrawSeatGizmos();
     }
-
     private void DrawPathGizmos()
     {
         if (_agent != null && _agent.hasPath)
@@ -465,7 +437,6 @@ public class CustommerBehavior : MonoBehaviour
             }
         }
     }
-
     private void DrawSeatGizmos()
     {
         if (_currentSeat != null)

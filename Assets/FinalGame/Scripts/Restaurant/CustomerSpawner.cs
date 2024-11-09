@@ -40,11 +40,12 @@ public class CustomerSpawner : MonoBehaviour
     private bool isSpawning = true;
     private int currentSpeedLevel = 1;
 
-    // Cache cho hệ thống weight
+    
     private float totalWeight;
     private List<float> cumulativeWeights;
     private Coroutine spawnCoroutine;
 
+    #region Unity Lifecycle
     private void Awake()
     {
         if (restaurantManager == null)
@@ -53,7 +54,7 @@ public class CustomerSpawner : MonoBehaviour
             enabled = false;
             return;
         }
-        // Ensure we have reference to RestaurantManager
+       
         restaurantManager = RestaurantManager.Instance;
         DontDestroyOnLoad(gameObject);
     }
@@ -70,14 +71,6 @@ public class CustomerSpawner : MonoBehaviour
         // Đăng ký lắng nghe sự kiện khi số lượng ghế thay đổi
         RestaurantManager.OnSeatsChanged += OnSeatsUpdated;
     }
-    private void StartSpawnRoutine()
-    {
-        // Nếu đã có coroutine đang chạy, không start cái mới
-        if (spawnCoroutine == null && !isSpawning)
-        {
-            spawnCoroutine = StartCoroutine(SpawnRoutine());
-        }
-    }
     private void OnDisable()
     {
         if (restaurantManager != null)
@@ -93,6 +86,8 @@ public class CustomerSpawner : MonoBehaviour
             isSpawning = false;
         }
     }
+    #endregion
+
     private void OnSeatsUpdated()
     {
         if (restaurantManager == null) return;
@@ -103,6 +98,16 @@ public class CustomerSpawner : MonoBehaviour
             StartSpawnRoutine();
         }
     }
+
+    private void StartSpawnRoutine()
+    {
+        // Nếu đã có coroutine đang chạy, không start cái mới
+        if (spawnCoroutine == null && !isSpawning)
+        {
+            spawnCoroutine = StartCoroutine(SpawnRoutine());
+        }
+    }
+
     private void ValidateCustomerPrefabs()
     {
         if (customerPrefabs == null || customerPrefabs.Count == 0)
@@ -159,31 +164,6 @@ public class CustomerSpawner : MonoBehaviour
             cumulativeWeights.Add(totalWeight);
         }
     }
-
-    private GameObject GetRandomCustomerPrefab()
-    {
-        if (customerPrefabs.Count == 0) return null;
-
-        if (!useSpawnWeights)
-        {
-            // Simple random selection if not using weights
-            return customerPrefabs[Random.Range(0, customerPrefabs.Count)].prefab;
-        }
-
-        // Weight-based random selection
-        float random = Random.Range(0f, totalWeight);
-        for (int i = 0; i < cumulativeWeights.Count; i++)
-        {
-            if (random <= cumulativeWeights[i])
-            {
-                return customerPrefabs[i].prefab;
-            }
-        }
-
-        // Fallback to last prefab if something goes wrong
-        return customerPrefabs[customerPrefabs.Count - 1].prefab;
-    }
-
     private IEnumerator SpawnRoutine()
     {
         isSpawning = true;
@@ -212,7 +192,7 @@ public class CustomerSpawner : MonoBehaviour
 
     private void TrySpawnCustomer()
     {
-        Seat availableSeat = restaurantManager.FindNearestAvailableTable(spawnPoint.position);
+        Seat availableSeat = restaurantManager.FindNearestAvailableSeat(spawnPoint.position);
 
         if (availableSeat != null)
         {
@@ -246,6 +226,29 @@ public class CustomerSpawner : MonoBehaviour
     {
         var upgrade = speedUpgrades.Find(u => u.level == currentSpeedLevel);
         return upgrade?.spawnTimeReduction ?? 0f;
+    }
+    private GameObject GetRandomCustomerPrefab()
+    {
+        if (customerPrefabs.Count == 0) return null;
+
+        if (!useSpawnWeights)
+        {
+            // Simple random selection if not using weights
+            return customerPrefabs[Random.Range(0, customerPrefabs.Count)].prefab;
+        }
+
+        // Weight-based random selection
+        float random = Random.Range(0f, totalWeight);
+        for (int i = 0; i < cumulativeWeights.Count; i++)
+        {
+            if (random <= cumulativeWeights[i])
+            {
+                return customerPrefabs[i].prefab;
+            }
+        }
+
+        // Fallback to last prefab if something goes wrong
+        return customerPrefabs[customerPrefabs.Count - 1].prefab;
     }
 
     #region Upgrade System
