@@ -4106,11 +4106,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 231009652}
   sitPosition: {fileID: 1878394760}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &232583983
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7985,7 +7985,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frontDoor: {fileID: 1261100467}
   customerDispawnPoint: {fileID: 2069390393}
-  availableSeat: []
 --- !u!4 &433863996
 Transform:
   m_ObjectHideFlags: 0
@@ -9183,11 +9182,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 584562581}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &496941649 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -9532,11 +9531,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 761841431}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &510014664 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2614627187404006003, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -10226,11 +10225,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 527306130}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &520878492 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8478848167544206441, guid: 56256e4f27667e7418999ec9814e24cf, type: 3}
@@ -11048,11 +11047,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1741206257}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &561467896 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -11621,11 +11620,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 134824463}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &590443483
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13588,11 +13587,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1550708013}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &696036478 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -14520,11 +14519,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 0
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1245832054}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &734272483
 GameObject:
   m_ObjectHideFlags: 0
@@ -15273,17 +15272,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 228336478}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ca52235ca648f240b09df2f357d7939, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1260348979}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &761841430
 GameObject:
   m_ObjectHideFlags: 0
@@ -18089,11 +18088,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 258697704}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &881905442
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21011,11 +21010,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 1015531858}
   sitPosition: {fileID: 1706251508}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &1017473712 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2614627187404006003, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -23319,11 +23318,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 616115795}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1122241601
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23679,11 +23678,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 2091410563}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1138645332 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5621177005071292731, guid: e44a81cddb13cac4d8ad43dcfcb329b3, type: 3}
@@ -23707,11 +23706,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 382361932}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1138817635 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1954185702199389827, guid: e0f2df96b7a2b1b4eb0445c0a3be5515, type: 3}
@@ -25277,11 +25276,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 355054798}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &1223600074 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8773733996242908837, guid: bd6afbd0ba4210249ae73eb0f02c8018, type: 3}
@@ -27091,11 +27090,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 472011555}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &1300077241 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2614627187404006003, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -27906,11 +27905,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1058029548}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1328487398
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28268,11 +28267,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 2046190493}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1346945502
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28819,11 +28818,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 990277584}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &1370202757
 GameObject:
   m_ObjectHideFlags: 0
@@ -29818,11 +29817,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1092711982}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1397318051
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30590,11 +30589,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1704311572}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1421067022 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7996264972878318177, guid: 34d4d82c1bf25e642924b521b8a00cd3, type: 3}
@@ -31269,11 +31268,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1477301802}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1461266656 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6166584487648029287, guid: cc2c18e189d423749bcb27809650683d, type: 3}
@@ -31848,11 +31847,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 385103014}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &1477301801
 GameObject:
   m_ObjectHideFlags: 0
@@ -32427,11 +32426,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 963350316}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1499943818 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2467845069284678478, guid: 3c0b460c20e5c954d8523df4157882d1, type: 3}
@@ -32701,11 +32700,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 263628607}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1505650099
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33497,11 +33496,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 1019208036}
   sitPosition: {fileID: 12882200}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1535783025
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34369,11 +34368,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 2119523500}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1587159321 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4307640417859606744, guid: 3e30d69eae4e65745ba7f921b034d1e8, type: 3}
@@ -34397,11 +34396,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1553005986}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1589876254 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -34650,11 +34649,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 919616850}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1616451140 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8059396674404276094, guid: 0d95f73c56599284c879061ca174d51d, type: 3}
@@ -35062,11 +35061,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1619383876}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &1630653605 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5372147492997415629, guid: dd6658866c1c65a4aa4a6c6e8e34e4f5, type: 3}
@@ -36751,11 +36750,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 735663183}
   sitPosition: {fileID: 515970712}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &1693666403 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5372147492997415629, guid: dd6658866c1c65a4aa4a6c6e8e34e4f5, type: 3}
@@ -37083,11 +37082,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1819486311}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1707581130 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8522075622236389654, guid: dd6658866c1c65a4aa4a6c6e8e34e4f5, type: 3}
@@ -37728,11 +37727,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1117711399}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1738257924 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -38190,11 +38189,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 500050670}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1752303795
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38406,11 +38405,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 929056722}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1760638719
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39604,11 +39603,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1657602131}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &1810159386 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8773733996242908837, guid: bd6afbd0ba4210249ae73eb0f02c8018, type: 3}
@@ -39627,11 +39626,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 2087610837}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1810750646 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -40329,11 +40328,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 734272484}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1838940391 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8522075622236389654, guid: dd6658866c1c65a4aa4a6c6e8e34e4f5, type: 3}
@@ -41333,11 +41332,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1057279212}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1 &1878394759
 GameObject:
   m_ObjectHideFlags: 0
@@ -41579,11 +41578,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1001215903}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1884648855
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41890,11 +41889,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 1675368341}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1901256896 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3704873345285523267, guid: 034ec88d9b7b7ea479dc4a30583a6929, type: 3}
@@ -43593,11 +43592,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 714754409}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!4 &1973081284 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1954185702199389827, guid: e0f2df96b7a2b1b4eb0445c0a3be5515, type: 3}
@@ -43814,11 +43813,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 2
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 1049802401}
   sitPosition: {fileID: 283722264}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &1984477167
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46185,11 +46184,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seatID: 1
-  availableChair: 1
   currentCustomer: {fileID: 0}
   chairTransform: {fileID: 0}
   sitPosition: {fileID: 673562360}
   seatRotation: {x: 0, y: 0, z: 0}
+  availableChair: 1
 --- !u!1001 &2108504653
 PrefabInstance:
   m_ObjectHideFlags: 0
