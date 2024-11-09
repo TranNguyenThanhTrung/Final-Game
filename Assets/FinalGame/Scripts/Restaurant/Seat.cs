@@ -45,6 +45,18 @@ public class Seat : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        // Tự động đăng ký ghế với RestaurantManager khi component được enable
+        RestaurantManager.Instance?.RegisterSeat(this);
+    }
+
+    private void OnDisable()
+    {
+        // Hủy đăng ký ghế khi component bị disable
+        RestaurantManager.Instance?.UnregisterSeat(this);
+    }
+
     // Kiểm tra và đặt ghế cho khách
     public bool TryOccupySeat(CustommerBehavior customer)
     {

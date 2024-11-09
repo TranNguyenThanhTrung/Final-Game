@@ -22,25 +22,40 @@ public class CustomerSpawner : MonoBehaviour
 
     [Header("Customer Prefabs")]
     [SerializeField] private List<CustomerPrefabData> customerPrefabs;
-    [SerializeField] private bool useSpawnWeights = true; // Toggle để bật/tắt hệ thống weight
+    [SerializeField] private bool useSpawnWeights = true;
 
     [Header("Base Settings")]
+    [SerializeField] private RestaurantManager restaurantManager;
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private float baseSpawnTime = 5f;
+    [SerializeField] private float minSpawnTime = 0.5f;
+    [SerializeField] private float checkSeatsInterval = 0.5f;
 
     [Header("Upgrade Settings")]
     [SerializeField] private List<SpeedUpgrade> speedUpgrades;
+    
 
     private float currentSpawnTime;
     private float spawnTimer;
     private bool isSpawning = true;
-    private RestaurantManager restaurantManager;
     private int currentSpeedLevel = 1;
 
     // Cache cho hệ thống weight
     private float totalWeight;
     private List<float> cumulativeWeights;
 
+    private void Awake()
+    {
+        if (restaurantManager == null)
+        {
+            Debug.LogError("RestaurantManager not found! Disabling CustomerSpawner.");
+            enabled = false;
+            return;
+        }
+        // Ensure we have reference to RestaurantManager
+        restaurantManager = RestaurantManager.Instance;
+        DontDestroyOnLoad(gameObject);
+    }
     private void Start()
     {
         restaurantManager = RestaurantManager.Instance;
@@ -49,7 +64,25 @@ public class CustomerSpawner : MonoBehaviour
         ValidateCustomerPrefabs();
         StartCoroutine(SpawnRoutine());
     }
+    private void OnEnable()
+    {
+        // Đăng ký lắng nghe sự kiện khi số lượng ghế thay đổi
+        RestaurantManager.OnSeatsChanged += OnSeatsUpdated;
+    }
 
+    private void OnDisable()
+    {
+        // Hủy đăng ký lắng nghe khi component bị disable
+        RestaurantManager.OnSeatsChanged -= OnSeatsUpdated;
+    }
+    private void OnSeatsUpdated()
+    {
+        // Kiểm tra nếu có ghế trống và đang không spawn
+        if (restaurantManager.HasAvailableSeats())
+        {
+            StartCoroutine(SpawnRoutine());
+        }
+    }
     private void ValidateCustomerPrefabs()
     {
         if (customerPrefabs == null || customerPrefabs.Count == 0)
@@ -133,6 +166,7 @@ public class CustomerSpawner : MonoBehaviour
 
     private IEnumerator SpawnRoutine()
     {
+        isSpawning = true;
         while (true)
         {
             if (restaurantManager.HasAvailableSeats())
@@ -142,9 +176,21 @@ public class CustomerSpawner : MonoBehaviour
             }
             else
             {
-                yield return new WaitForSeconds(0.5f);
+                // Tạm dừng một chút trước khi kiểm tra lại
+                isSpawning = false;
+                yield return new WaitForSeconds(checkSeatsInterval);
+
+                // Nếu vẫn không có ghế trống, thoát khỏi coroutine
+                if (!restaurantManager.HasAvailableSeats())
+                {
+                    break;
+                }
+
+                // Nếu có ghế trống, tiếp tục spawn
+                isSpawning = true;
             }
         }
+        isSpawning = false;
     }
 
     private void TrySpawnCustomer()

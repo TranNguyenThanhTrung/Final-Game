@@ -1,11 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Linq;
 
 public class RestaurantManager : MonoBehaviour
 {
-    private static RestaurantManager instance;
+    #region Instance
+    [SerializeField] private static RestaurantManager instance;
     public static RestaurantManager Instance
     {
         get
@@ -17,11 +18,17 @@ public class RestaurantManager : MonoBehaviour
             return instance;
         }
     }
+    #endregion
+    public GameObject frontDoor;
+    public GameObject customerDispawnPoint;
+    public delegate void SeatsChangedHandler();
+    public static event SeatsChangedHandler OnSeatsChanged;
 
     [SerializeField]
-    private List<Seat> availableTables = new List<Seat>();
+    private List<Seat> availableSeat = new List<Seat>();
     private Queue<Order> pendingOrders = new Queue<Order>();
     private List<Order> activeOrders = new List<Order>();
+    private int currentCustomerCount = 0;
 
     // Properties
     public int Level { get; private set; } = 1;
@@ -51,14 +58,52 @@ public class RestaurantManager : MonoBehaviour
     {
         InitializeTables();
     }
+    public void NotifySeatsChanged()
+    {
+        OnSeatsChanged?.Invoke();
+    }
+    public void RegisterSeat(Seat seat)
+    {
+        if (!availableSeat.Contains(seat))
+        {
+            availableSeat.Add(seat);
+            // Subscribe vào sự kiện thay đổi trạng thái của ghế
+            seat.OnSeatStatusChanged += () => OnTableStatusChanged?.Invoke(seat);
+            NotifySeatsChanged();
+        }
+    }
+    public void UnregisterSeat(Seat seat)
+    {
+        if (availableSeat.Contains(seat))
+        {
+            availableSeat.Remove(seat);
+            // Unsubscribe khỏi sự kiện của ghế
+            seat.OnSeatStatusChanged -= () => OnTableStatusChanged?.Invoke(seat);
+            NotifySeatsChanged();
+        }
+    }
+    public int GetTotalSeats()
+    {
+        return availableSeat.Count;
+    }
+    public int GetCurrentCustomerCount()
+    {
+        return currentCustomerCount;
+    }
+
+    // Cập nhật số lượng khách
+    public void UpdateCustomerCount(int change)
+    {
+        currentCustomerCount += change;
+    }
 
     private void InitializeTables()
     {
-        availableTables.Clear();
-        availableTables.AddRange(FindObjectsOfType<Seat>());
+        availableSeat.Clear();
+        availableSeat.AddRange(FindObjectsOfType<Seat>());
 
-        // Subscribe to table status changes
-        foreach (var table in availableTables)
+        // Subscribe to Seat status changes
+        foreach (var table in availableSeat)
         {
             table.OnSeatStatusChanged += () => OnTableStatusChanged?.Invoke(table);
         }
@@ -70,7 +115,7 @@ public class RestaurantManager : MonoBehaviour
         Seat nearestTable = null;
         float shortestDistance = float.MaxValue;
 
-        foreach (var table in availableTables)
+        foreach (var table in availableSeat)
         {
             if (table.AvailableChair)
             {
@@ -142,7 +187,7 @@ public class RestaurantManager : MonoBehaviour
     }
     public List<Seat> GetAllAvailableSeats()
     {
-        return availableTables.Where(table => table.AvailableChair).ToList();
+        return availableSeat.Where(table => table.AvailableChair).ToList();
     }
 
     public Seat FindBestAvailableTable(Vector3 position, float maxDistance = float.MaxValue)
@@ -158,7 +203,7 @@ public class RestaurantManager : MonoBehaviour
 
     public bool HasAvailableSeats()
     {
-        return availableTables.Any(table => table.AvailableChair);
+        return availableSeat.Any(Seat => Seat.AvailableChair);
     }
 
     // Debug Methods
@@ -167,7 +212,7 @@ public class RestaurantManager : MonoBehaviour
         Debug.Log($"Restaurant Status:");
         Debug.Log($"Level: {Level}");
         Debug.Log($"Money: ${Money}");
-        Debug.Log($"Active Tables: {availableTables.Count}");
+        Debug.Log($"Active Tables: {availableSeat.Count}");
         Debug.Log($"Pending Orders: {pendingOrders.Count}");
         Debug.Log($"Active Orders: {activeOrders.Count}");
     }

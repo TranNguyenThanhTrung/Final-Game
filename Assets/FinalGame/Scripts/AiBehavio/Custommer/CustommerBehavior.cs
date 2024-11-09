@@ -86,7 +86,18 @@ public class CustommerBehavior : MonoBehaviour
     #region Initialization
     private void InitializeComponents()
     {
-        
+        if (RestaurantManager.Instance != null)
+        {
+            frontDoor = RestaurantManager.Instance.frontDoor;
+            dispawnPos = RestaurantManager.Instance.customerDispawnPoint;
+        }
+        else
+        {
+            Debug.LogError($"[{nameof(CustommerBehavior)}] RestaurantReferences not found in scene!");
+            enabled = false;
+            return;
+        }
+
         _agent = GetComponent<NavMeshAgent>();
         if (_agent == null)
         {
