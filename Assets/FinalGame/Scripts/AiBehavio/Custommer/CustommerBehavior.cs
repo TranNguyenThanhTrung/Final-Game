@@ -18,7 +18,6 @@ public class CustommerBehavior : MonoBehaviour
     [Header("Navigation Points")]
     [SerializeField] private GameObject frontDoor;
     [SerializeField] private GameObject dispawnPos;
-    [SerializeField] private GameObject spawnPos;
 
     [Header("Animation")]
     [SerializeField] private Animator animator;
@@ -87,6 +86,7 @@ public class CustommerBehavior : MonoBehaviour
     #region Initialization
     private void InitializeComponents()
     {
+        
         _agent = GetComponent<NavMeshAgent>();
         if (_agent == null)
         {
