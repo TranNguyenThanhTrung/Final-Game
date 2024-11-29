@@ -5,10 +5,13 @@ public class Seat : MonoBehaviour
 {
     public int seatID;
     [SerializeField] private CustommerBehavior currentCustomer;
-    [SerializeField] private Transform chairTransform; // Reference đến bàn
+    [SerializeField] private Transform chairTransform;
     [SerializeField] private Transform sitPosition;
     [SerializeField] private Vector3 seatRotation = Vector3.zero;
-    [SerializeField]private bool availableChair = true;
+
+
+    [SerializeField] private bool availableChair = true;
+    public bool hasCustommer = false;
     public bool AvailableChair
     {
         get { return availableChair; }
@@ -18,18 +21,18 @@ public class Seat : MonoBehaviour
             OnSeatStatusChanged();
         }
     }
-
+    
     public Vector3 SitPosition => sitPosition != null ? sitPosition.position : transform.position;
     public Quaternion TargetRotation => Quaternion.Euler(seatRotation);
     public Transform TableTransform => chairTransform;
     public event SeatStatusChanged OnSeatStatusChanged;
     public delegate void SeatStatusChanged();
 
-    private void Awake()
+    public void Awake()
     {
         chairTransform = gameObject.GetComponent<Transform>();
     }
-    private void OnValidate()
+    public void OnValidate()
     {
         if (sitPosition == null)
         {
@@ -39,15 +42,15 @@ public class Seat : MonoBehaviour
             sitPosition = sitPos.transform;
         }
     }
-    private void OnEnable()
+    public void OnEnable()
     {
         RestaurantManager.Instance?.RegisterSeat(this);
     }
-    private void OnDisable()
+    public void OnDisable()
     {
         RestaurantManager.Instance?.UnregisterSeat(this);
     }
-    private void OnDrawGizmos()
+    public void OnDrawGizmos()
     {
         // Vẽ visual trong editor để dễ nhìn trạng thái ghế
         Gizmos.color = AvailableChair ? Color.green : Color.red;
@@ -68,6 +71,7 @@ public class Seat : MonoBehaviour
         if (!AvailableChair)
         {
             AvailableChair = true;
+            hasCustommer = false;
             currentCustomer = null;
         }
     }

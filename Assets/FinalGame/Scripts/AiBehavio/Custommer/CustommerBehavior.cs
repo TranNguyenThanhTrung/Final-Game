@@ -24,8 +24,9 @@ public class CustommerBehavior : MonoBehaviour
     [SerializeField] private float animationBlendSpeed = 0.1f;
     [SerializeField] private float seatTriggerDistance = 1.5f;
     [SerializeField] private float rotationSpeed = 10f;
+    
     #endregion
-
+    
     #region Animation Parameters
     private static readonly int IsWalking = Animator.StringToHash("IsWalking");
     private static readonly int IsSitting = Animator.StringToHash("IsSitting");
@@ -62,7 +63,7 @@ public class CustommerBehavior : MonoBehaviour
     private float _timeStuck;
     private float _currentMovementBlend;
     #endregion
-
+    //-------- 
     #region Unity Lifecycle
     private void Awake()
     {
@@ -85,6 +86,7 @@ public class CustommerBehavior : MonoBehaviour
     {
         if (RestaurantManager.Instance != null)
         {
+            
             frontDoor = RestaurantManager.Instance.frontDoor;
             dispawnPos = RestaurantManager.Instance.customerDispawnPoint;
         }
@@ -168,6 +170,56 @@ public class CustommerBehavior : MonoBehaviour
     }
     #endregion
 
+    #region Navigation
+    private Node.NodeState MoveTo(Vector3 destination)
+    {
+        float distanceToTarget = Vector3.Distance(transform.position, destination);
+
+        if (CurrentState == CustomerState.Idle)
+        {
+            Debug.Log($"Starting movement to {destination}");
+            _agent.SetDestination(destination);
+            CurrentState = CustomerState.Working;
+        }
+
+        if (!_agent.hasPath)
+        {
+            Debug.LogWarning("No valid path found!");
+            CurrentState = CustomerState.Idle;
+            return Node.NodeState.FAILURE;
+        }
+
+        if (distanceToTarget < ARRIVAL_THRESHOLD)
+        {
+            Debug.Log($"Reached destination {destination}");
+            CurrentState = CustomerState.Idle;
+            return Node.NodeState.SUCCESS;
+        }
+
+        return HandleStuckDetection();
+    }
+    private Node.NodeState HandleStuckDetection()
+    {
+        if (_agent.velocity.magnitude < 0.01f && CurrentState == CustomerState.Working)
+        {
+            _timeStuck += Time.deltaTime;
+            if (_timeStuck > MAX_STUCK_TIME)
+            {
+                Debug.LogWarning("Agent stuck for too long!");
+                CurrentState = CustomerState.Idle;
+                _timeStuck = 0;
+                return Node.NodeState.FAILURE;
+            }
+        }
+        else
+        {
+            _timeStuck = 0;
+        }
+
+        return Node.NodeState.RUNNING;
+    }
+    #endregion
+
     #region Behavior Tree Actions
     private Node.NodeState GoToFrontDoor()
     {
@@ -188,6 +240,7 @@ public class CustommerBehavior : MonoBehaviour
         var nearestSeat = RestaurantManager.Instance.FindNearestAvailableSeat(transform.position);
         if (nearestSeat != null && nearestSeat.TryOccupySeat(this))
         {
+            
             _currentSeat = nearestSeat;
             Debug.Log($"Found and occupied seat at {_currentSeat.transform.position}");
             return Node.NodeState.SUCCESS;
@@ -208,12 +261,9 @@ public class CustommerBehavior : MonoBehaviour
 
         if (distanceToSeat <= seatTriggerDistance)
         {
-            // Dịch chuyển người chơi lên ghế
             TeleportToSeat();
 
-            // Bắt đầu xoay về phía bàn
             StartRotatingTowardsTable();
-
             CurrentState = CustomerState.Sitting;
             PlaySitAnimation();
             return Node.NodeState.SUCCESS;
@@ -240,6 +290,8 @@ public class CustommerBehavior : MonoBehaviour
     private void TeleportToSeat()
     {
         // Tắt NavMeshAgent để có thể teleport
+        Debug.Log("Ngoi vao ghe 1");
+        _currentSeat.hasCustommer = true;
         _agent.enabled = false;
         switch (_currentSeat.seatID)
         {
@@ -292,9 +344,9 @@ public class CustommerBehavior : MonoBehaviour
         if (!_hasOrdered)
         {
             CurrentOrder = (Dish)UnityEngine.Random.Range(0, Enum.GetValues(typeof(Dish)).Length);
-            Debug.Log($"Ordering: {CurrentOrder}");
 
             RestaurantManager.Instance.SubmitOrder(this, CurrentOrder);
+            Debug.Log($"Ordering: {CurrentOrder}{this}");
 
             _hasOrdered = true;
             _isWaitingForFood = true;
@@ -340,66 +392,13 @@ public class CustommerBehavior : MonoBehaviour
     }
     #endregion
 
-    #region Navigation
-    private Node.NodeState MoveTo(Vector3 destination)
-    {
-        float distanceToTarget = Vector3.Distance(transform.position, destination);
-
-        if (CurrentState == CustomerState.Idle)
-        {
-            Debug.Log($"Starting movement to {destination}");
-            _agent.SetDestination(destination);
-            CurrentState = CustomerState.Working;
-        }
-
-        if (!_agent.hasPath)
-        {
-            Debug.LogWarning("No valid path found!");
-            CurrentState = CustomerState.Idle;
-            return Node.NodeState.FAILURE;
-        }
-
-        if (distanceToTarget < ARRIVAL_THRESHOLD)
-        {
-            Debug.Log($"Reached destination {destination}");
-            CurrentState = CustomerState.Idle;
-            return Node.NodeState.SUCCESS;
-        }
-
-        return HandleStuckDetection();
-    }
-    private Node.NodeState HandleStuckDetection()
-    {
-        if (_agent.velocity.magnitude < 0.01f && CurrentState == CustomerState.Working)
-        {
-            _timeStuck += Time.deltaTime;
-            if (_timeStuck > MAX_STUCK_TIME)
-            {
-                Debug.LogWarning("Agent stuck for too long!");
-                CurrentState = CustomerState.Idle;
-                _timeStuck = 0;
-                return Node.NodeState.FAILURE;
-            }
-        }
-        else
-        {
-            _timeStuck = 0;
-        }
-
-        return Node.NodeState.RUNNING;
-    }
-    #endregion
-
-    #region Public Methods
+    #region Private Helper Methods
     public void ResetState()
     {
         _hasReachedFrontDoor = false;
         CurrentState = CustomerState.Idle;
         _agent?.ResetPath();
     }
-    #endregion
-
-    #region Private Helper Methods
     private void ReleasePreviousSeat()
     {
         if (_currentSeat != null)
@@ -450,6 +449,7 @@ public class CustommerBehavior : MonoBehaviour
     #endregion
 
     #region State Transitions
+    
     private void TransitionToState(CustomerState newState)
     {
         // Exit current state
@@ -474,5 +474,6 @@ public class CustommerBehavior : MonoBehaviour
 
         CurrentState = newState;
     }
+
     #endregion
 }

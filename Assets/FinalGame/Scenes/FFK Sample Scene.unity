@@ -2902,7 +2902,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6954708285465330019, guid: 341460f08b975f64789f439aa4c94437, type: 3}
       propertyPath: m_Name
-      value: FFK_RegisterTable_01_01
+      value: KitChenCounter
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4111,6 +4111,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1878394760}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &232583983
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5588,7 +5589,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1927095934725912877, guid: a9b081014bad86f4a80b60284279d21b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 10.11
       objectReference: {fileID: 0}
     - target: {fileID: 1927095934725912877, guid: a9b081014bad86f4a80b60284279d21b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5600,19 +5601,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1927095934725912877, guid: a9b081014bad86f4a80b60284279d21b, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9785956
       objectReference: {fileID: 0}
     - target: {fileID: 1927095934725912877, guid: a9b081014bad86f4a80b60284279d21b, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1927095934725912877, guid: a9b081014bad86f4a80b60284279d21b, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.20579275
       objectReference: {fileID: 0}
     - target: {fileID: 1927095934725912877, guid: a9b081014bad86f4a80b60284279d21b, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1927095934725912877, guid: a9b081014bad86f4a80b60284279d21b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5620,7 +5621,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1927095934725912877, guid: a9b081014bad86f4a80b60284279d21b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -23.752
       objectReference: {fileID: 0}
     - target: {fileID: 1927095934725912877, guid: a9b081014bad86f4a80b60284279d21b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -6334,6 +6335,78 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6166584487648029287, guid: cc2c18e189d423749bcb27809650683d, type: 3}
   m_PrefabInstance: {fileID: 334572111}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &336102383
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 969332909607251408, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 969332909607251408, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 32488d0a82c318a40a539bd58ab9ce79, type: 2}
+    - target: {fileID: 3427687778517716980, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_Name
+      value: AI(Male)(Q.Anh)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3427687778517716980, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.8378353
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.99
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 11.761437
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082811934906488394, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3427687778517716980, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1252529987}
+  m_SourcePrefab: {fileID: 100100000, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
 --- !u!1 &342027485 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2614627187404006003, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -9187,6 +9260,7 @@ MonoBehaviour:
   sitPosition: {fileID: 584562581}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &496941649 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -9536,6 +9610,7 @@ MonoBehaviour:
   sitPosition: {fileID: 761841431}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &510014664 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2614627187404006003, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -10230,6 +10305,7 @@ MonoBehaviour:
   sitPosition: {fileID: 527306130}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &520878492 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8478848167544206441, guid: 56256e4f27667e7418999ec9814e24cf, type: 3}
@@ -11052,6 +11128,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1741206257}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &561467896 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -11625,6 +11702,7 @@ MonoBehaviour:
   sitPosition: {fileID: 134824463}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &590443483
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13592,6 +13670,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1550708013}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &696036478 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -13699,6 +13778,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e96f0b0da5565a4b99c81f8d0cd8391, type: 3}
+--- !u!1 &698425068
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 698425069}
+  m_Layer: 0
+  m_Name: WaittingPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &698425069
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 698425068}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2, y: 0, z: 12}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &700588491 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2614627187404006003, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -14524,6 +14634,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1245832054}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &734272483
 GameObject:
   m_ObjectHideFlags: 0
@@ -15283,6 +15394,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1260348979}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &761841430
 GameObject:
   m_ObjectHideFlags: 0
@@ -18093,6 +18205,7 @@ MonoBehaviour:
   sitPosition: {fileID: 258697704}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &881905442
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20913,7 +21026,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6954708285465330019, guid: 341460f08b975f64789f439aa4c94437, type: 3}
       propertyPath: m_Name
-      value: FFK_RegisterTable_01_01 (1)
+      value: KitChenCounter
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -21015,6 +21128,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1706251508}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &1017473712 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2614627187404006003, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -23323,6 +23437,7 @@ MonoBehaviour:
   sitPosition: {fileID: 616115795}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1122241601
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23683,6 +23798,7 @@ MonoBehaviour:
   sitPosition: {fileID: 2091410563}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1138645332 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5621177005071292731, guid: e44a81cddb13cac4d8ad43dcfcb329b3, type: 3}
@@ -23711,6 +23827,7 @@ MonoBehaviour:
   sitPosition: {fileID: 382361932}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1138817635 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1954185702199389827, guid: e0f2df96b7a2b1b4eb0445c0a3be5515, type: 3}
@@ -25281,6 +25398,7 @@ MonoBehaviour:
   sitPosition: {fileID: 355054798}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &1223600074 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8773733996242908837, guid: bd6afbd0ba4210249ae73eb0f02c8018, type: 3}
@@ -25982,6 +26100,39 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1885153562}
   m_SourcePrefab: {fileID: 100100000, guid: 4ada60c29a249cd4682acbb07b830ca1, type: 3}
+--- !u!1 &1252529986 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3427687778517716980, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+  m_PrefabInstance: {fileID: 336102383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1252529987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252529986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e79c73236fa2a4249813e072cc5a9280, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agent: {fileID: 1252529988}
+  rotationSpeed: 10
+  animator: {fileID: 1252529989}
+  animationBlendSpeed: 0.1
+  kitchenCounterPosition: {fileID: 727808361}
+  waitingPosition: {fileID: 698425069}
+--- !u!195 &1252529988 stripped
+NavMeshAgent:
+  m_CorrespondingSourceObject: {fileID: -5702684655685372794, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+  m_PrefabInstance: {fileID: 336102383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1252529989 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 969332909607251408, guid: 322242f7609895c4f99f32cf3a970e92, type: 3}
+  m_PrefabInstance: {fileID: 336102383}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1252830790
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27095,6 +27246,7 @@ MonoBehaviour:
   sitPosition: {fileID: 472011555}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &1300077241 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2614627187404006003, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -27910,6 +28062,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1058029548}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1328487398
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28272,6 +28425,7 @@ MonoBehaviour:
   sitPosition: {fileID: 2046190493}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1346945502
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28823,6 +28977,7 @@ MonoBehaviour:
   sitPosition: {fileID: 990277584}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &1370202757
 GameObject:
   m_ObjectHideFlags: 0
@@ -29822,6 +29977,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1092711982}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1397318051
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30594,6 +30750,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1704311572}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1421067022 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7996264972878318177, guid: 34d4d82c1bf25e642924b521b8a00cd3, type: 3}
@@ -31273,6 +31430,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1477301802}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1461266656 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6166584487648029287, guid: cc2c18e189d423749bcb27809650683d, type: 3}
@@ -31852,6 +32010,7 @@ MonoBehaviour:
   sitPosition: {fileID: 385103014}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &1477301801
 GameObject:
   m_ObjectHideFlags: 0
@@ -32431,6 +32590,7 @@ MonoBehaviour:
   sitPosition: {fileID: 963350316}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1499943818 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2467845069284678478, guid: 3c0b460c20e5c954d8523df4157882d1, type: 3}
@@ -32705,6 +32865,7 @@ MonoBehaviour:
   sitPosition: {fileID: 263628607}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1505650099
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33501,6 +33662,7 @@ MonoBehaviour:
   sitPosition: {fileID: 12882200}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1535783025
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34373,6 +34535,7 @@ MonoBehaviour:
   sitPosition: {fileID: 2119523500}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1587159321 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4307640417859606744, guid: 3e30d69eae4e65745ba7f921b034d1e8, type: 3}
@@ -34401,6 +34564,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1553005986}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1589876254 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -34654,6 +34818,7 @@ MonoBehaviour:
   sitPosition: {fileID: 919616850}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1616451140 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8059396674404276094, guid: 0d95f73c56599284c879061ca174d51d, type: 3}
@@ -35066,6 +35231,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1619383876}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &1630653605 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5372147492997415629, guid: dd6658866c1c65a4aa4a6c6e8e34e4f5, type: 3}
@@ -36755,6 +36921,7 @@ MonoBehaviour:
   sitPosition: {fileID: 515970712}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &1693666403 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5372147492997415629, guid: dd6658866c1c65a4aa4a6c6e8e34e4f5, type: 3}
@@ -37087,6 +37254,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1819486311}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1707581130 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8522075622236389654, guid: dd6658866c1c65a4aa4a6c6e8e34e4f5, type: 3}
@@ -37732,6 +37900,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1117711399}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1738257924 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -38194,6 +38363,7 @@ MonoBehaviour:
   sitPosition: {fileID: 500050670}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1752303795
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38410,6 +38580,7 @@ MonoBehaviour:
   sitPosition: {fileID: 929056722}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1760638719
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39608,6 +39779,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1657602131}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &1810159386 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8773733996242908837, guid: bd6afbd0ba4210249ae73eb0f02c8018, type: 3}
@@ -39631,6 +39803,7 @@ MonoBehaviour:
   sitPosition: {fileID: 2087610837}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1810750646 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5838439550256664009, guid: 75c16d4794f25e84ea8d82ee45dd1937, type: 3}
@@ -40333,6 +40506,7 @@ MonoBehaviour:
   sitPosition: {fileID: 734272484}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1838940391 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8522075622236389654, guid: dd6658866c1c65a4aa4a6c6e8e34e4f5, type: 3}
@@ -41337,6 +41511,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1057279212}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1 &1878394759
 GameObject:
   m_ObjectHideFlags: 0
@@ -41583,6 +41758,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1001215903}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1884648855
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41894,6 +42070,7 @@ MonoBehaviour:
   sitPosition: {fileID: 1675368341}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1901256896 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3704873345285523267, guid: 034ec88d9b7b7ea479dc4a30583a6929, type: 3}
@@ -43597,6 +43774,7 @@ MonoBehaviour:
   sitPosition: {fileID: 714754409}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!4 &1973081284 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1954185702199389827, guid: e0f2df96b7a2b1b4eb0445c0a3be5515, type: 3}
@@ -43818,6 +43996,7 @@ MonoBehaviour:
   sitPosition: {fileID: 283722264}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &1984477167
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45713,7 +45892,7 @@ GameObject:
   m_Layer: 0
   m_Name: SpawnPos
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -45726,7 +45905,7 @@ Transform:
   m_GameObject: {fileID: 2069390393}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.59, y: 0, z: 0}
+  m_LocalPosition: {x: -2.91, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46189,6 +46368,7 @@ MonoBehaviour:
   sitPosition: {fileID: 673562360}
   seatRotation: {x: 0, y: 0, z: 0}
   availableChair: 1
+  hasCustommer: 1
 --- !u!1001 &2108504653
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -48134,7 +48314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4196965934697374681, guid: 428b39398b33a5447b96f92f0030bf1b, type: 3}
       propertyPath: m_Name
-      value: FFK_RegisterTable_01_01 (2)
+      value: KitChenCounter
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -50221,3 +50401,5 @@ SceneRoots:
   - {fileID: 2069390394}
   - {fileID: 1426428379}
   - {fileID: 433863996}
+  - {fileID: 336102383}
+  - {fileID: 698425069}

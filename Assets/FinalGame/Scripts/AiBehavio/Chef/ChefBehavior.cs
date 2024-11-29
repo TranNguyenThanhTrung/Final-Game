@@ -1,124 +1,123 @@
-﻿using UnityEngine.AI;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Collections.Generic;
-using System;
-using Unity.VisualScripting;
-using System.Collections;
 
 public class ChefBehavior : MonoBehaviour
 {
-    public enum FoodType
-    {
-        Burger,
-        Water,
-        Apple,
-        None
-    }
-    public enum ActionState
-    {
-        Idle,
-        Working
-    }
+    #region SerializeFields
+    [Header("Cooking Settings")]
+    [SerializeField] private float baseCookingTime = 5f;
+    [SerializeField] private int maxSimultaneousOrders = 2;
 
-    public bool Oder;
-    public bool foodDone;
-    public bool pick;
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    #endregion
 
-    private BehaviorTree tree;
-    private NavMeshAgent agent;
+    #region Private Fields
+    private Queue<Order> _pendingOrders = new Queue<Order>();
+    private List<Order> _activeOrders = new List<Order>();
+    private Dictionary<Dish, float> _cookingTimes = new Dictionary<Dish, float>();
+    #endregion
 
-    //private Node.NodeState treeStatus = Node.NodeState.RUNNING;
-    public ActionState state = ActionState.Idle;
+    #region Animation Parameters
+    private static readonly int IsCooking = Animator.StringToHash("IsCooking");
+    #endregion
 
-    private Node InitializeBehaviorTree()
-    {
-
-        Leaf goToKitchen = new Leaf(GoToKitchen);
-        Leaf idle = new Leaf(Idle);
-        Leaf bringFoodToTable = new Leaf(BringFoodToTable);
-        Leaf pickUpFood = new Leaf(PickUpFood);
-
-
-        Sequence free = new Sequence(new List<Node> { idle });
-        Sequence serverOder = new Sequence(new List<Node> { pickUpFood, bringFoodToTable });
-        Selector foodState = new Selector(new List<Node> { serverOder, idle });
-        Sequence hasOder = new Sequence(new List<Node> { goToKitchen, foodState });
-
-        Selector jobState = new Selector(new List<Node> { hasOder, free });
-
-        return jobState;
-    }
+    #region Unity Lifecycle
     private void Start()
     {
-        Node chefBTRoot = InitializeBehaviorTree();
-        tree = new BehaviorTree(chefBTRoot);
+        InitializeCookingTimes();
+        RestaurantManager.Instance.OnOrderReceived += HandleNewOrder;
     }
 
     private void Update()
     {
-        tree.Update();
+        ProcessOrders();
+        UpdateAnimations();
     }
 
-    private Node.NodeState PickUpFood()
+    private void OnDestroy()
     {
-        if (foodDone)
+        if (RestaurantManager.Instance != null)
         {
-            Debug.Log("Da cam mon an");
-           
-            return Node.NodeState.SUCCESS;
-            
-        }
-        else
-        {
-            return Node.NodeState.FAILURE;
+            RestaurantManager.Instance.OnOrderReceived -= HandleNewOrder;
         }
     }
+    #endregion
 
-    private Node.NodeState BringFoodToTable()
+    #region Order Processing
+    private void InitializeCookingTimes()
     {
-
-            Debug.Log("Dang dem do an ra");
-            return Node.NodeState.SUCCESS;
+        // Set cooking times for different dishes
+        foreach (Dish dish in System.Enum.GetValues(typeof(Dish)))
+        {
+            _cookingTimes[dish] = baseCookingTime;
+        }
     }
 
-    private Node.NodeState Idle()
+    private void HandleNewOrder(Order order)
     {
-        Debug.Log("Dang ranh roi");
-        return Node.NodeState.SUCCESS;
+        _pendingOrders.Enqueue(order);
     }
 
-    private Node.NodeState GoToKitchen()
+    private void ProcessOrders()
     {
-        if (Oder)
+        // Start cooking new orders if capacity allows
+        while (_activeOrders.Count < maxSimultaneousOrders && _pendingOrders.Count > 0)
         {
-            Debug.Log("Dang vao bep");
-            return Node.NodeState.SUCCESS;
+            Order nextOrder = _pendingOrders.Dequeue();
+            StartCookingOrder(nextOrder);
         }
-        else
+
+        // Process active orders
+        for (int i = _activeOrders.Count - 1; i >= 0; i--)
         {
-            return Node.NodeState.FAILURE;
+            Order order = _activeOrders[i];
+            if (order.IsCompleted)
+            {
+                CompleteOrder(order);
+                _activeOrders.RemoveAt(i);
+            }
         }
     }
 
-    private Node.NodeState GoToLocation(Vector3 destination)
+    private void StartCookingOrder(Order order)
     {
-        float distance = Vector3.Distance(transform.position, destination);
-
-        if (state == ActionState.Idle)
-        {
-            agent.SetDestination(destination);
-            state = ActionState.Working;
-        }
-        else if (Vector3.Distance(agent.pathEndPosition, destination) >= 2)
-        {
-            state = ActionState.Idle;
-            return Node.NodeState.FAILURE;
-        }
-        else if (distance < 2)
-        {
-            state = ActionState.Idle;
-            return Node.NodeState.SUCCESS;
-        }
-        return Node.NodeState.RUNNING;
+        _activeOrders.Add(order);
+        StartCoroutine(CookOrder(order));
     }
+
+    private System.Collections.IEnumerator CookOrder(Order order)
+    {
+        float cookingTime = _cookingTimes[order.OrderedDish];
+        yield return new WaitForSeconds(cookingTime);
+
+        order.IsCompleted = true;
+        RestaurantManager.Instance.CompleteOrder(order);
+    }
+
+    private void CompleteOrder(Order order)
+    {
+        // Notify restaurant manager or other systems
+        Debug.Log($"Completed cooking order: {order.OrderedDish}");
+    }
+    #endregion
+
+    #region Animation
+    private void UpdateAnimations()
+    {
+        animator.SetBool(IsCooking, _activeOrders.Count > 0);
+    }
+    #endregion
+
+    #region Helper Methods
+    public bool HasCapacityForNewOrders()
+    {
+        return _activeOrders.Count < maxSimultaneousOrders;
+    }
+
+    public int GetQueueLength()
+    {
+        return _pendingOrders.Count + _activeOrders.Count;
+    }
+    #endregion
 }
