@@ -32,15 +32,16 @@ public class WaiterBehavior : MonoBehaviour
     public enum StaffState
     {
         Idle,
+
         MovingToCustomer,
         TakingOrder,
-        MovingToKitchen,
+        MovingToKitchenCounter,
         WaitingForFood,
         DeliveringFood,
         ReturningToWaitPosition
     }
 
-    public StaffState CurrentState { get; private set; } = StaffState.Idle;
+    public StaffState CurrentState { get; private set; } = StaffState.ReturningToWaitPosition;
     #endregion
 
     #region Private Fields
@@ -100,18 +101,19 @@ public class WaiterBehavior : MonoBehaviour
         return new Selector(new List<Node>
         {
             CreateOrderHandlingSequence(),
-            //new Leaf(ReturnToWaitPosition)
+            new Leaf(ReturnToWaitPosition)
         });
     }
 
     private Node CreateOrderHandlingSequence()
     {
+        // Sửa lại logic
         return new Sequence(new List<Node>
         {
             new Leaf(FindNewOrder),
             new Leaf(MoveToCustomer),
             new Leaf(TakeOrder),
-            new Leaf(MoveToKitchen),
+            new Leaf(MoveToKitchenCounter),
             new Leaf(WaitForFood),
             new Leaf(DeliverFood)
         });
@@ -121,7 +123,7 @@ public class WaiterBehavior : MonoBehaviour
     {
         if (RestaurantManager.Instance != null)
         {
-            
+
             RestaurantManager.Instance.OnOrderReceived += HandleNewOrder;
         }
     }
@@ -142,7 +144,7 @@ public class WaiterBehavior : MonoBehaviour
         {
             _currentOrder = order;
             TransitionToState(StaffState.MovingToCustomer);
-            Debug.Log("Di toi cho kach"+ CurrentState);
+            Debug.Log("Di toi cho kach " + CurrentState);
         }
     }
     #endregion
@@ -151,19 +153,19 @@ public class WaiterBehavior : MonoBehaviour
     private Node.NodeState MoveTo(Vector3 destination)
     {
         float distanceToTarget = Vector3.Distance(transform.position, destination);
-
         if (!agent.hasPath)
         {
+            Debug.Log($"{agent.name}{agent.hasPath}");
             agent.SetDestination(destination);
             return Node.NodeState.RUNNING;
         }
 
         if (distanceToTarget < ARRIVAL_THRESHOLD)
         {
+            Debug.Log($"{agent.name}{agent.hasPath}");
             agent.ResetPath();
             return Node.NodeState.SUCCESS;
         }
-
         return Node.NodeState.RUNNING;
     }
     #endregion
@@ -171,49 +173,57 @@ public class WaiterBehavior : MonoBehaviour
     #region Behavior Tree Actions
     private Node.NodeState FindNewOrder()
     {
-        Debug.Log("CurrentOder-----------" + _currentOrder);
-        if (_currentOrder != null) return Node.NodeState.SUCCESS;
-        return Node.NodeState.FAILURE;
+        if (_currentOrder != null)
+        {
+
+            Debug.Log("CurrentOder----------- Thanh cong: " + _currentOrder);
+            return Node.NodeState.SUCCESS;
+        }
+        else
+        {
+
+            Debug.Log("CurrentOder-----------That Bai: " + _currentOrder);
+            return Node.NodeState.FAILURE;
+        }
     }
 
     private Node.NodeState MoveToCustomer()
     {
-        Debug.Log("move to custommer check");
+        CurrentState = StaffState.MovingToCustomer;
         if (_currentOrder == null) return Node.NodeState.FAILURE;
 
         var customerPosition = _currentOrder.Customer.transform.position;
         var moveResult = MoveTo(customerPosition);
-        Debug.Log("move to custommer check"+ moveResult);
-        
-           
         if (moveResult == Node.NodeState.SUCCESS)
         {
-            Debug.Log("Customer-----------------------------------------");
+            Debug.Log("Move to customer state Check: " + moveResult);
             TransitionToState(StaffState.TakingOrder);
         }
 
+        Debug.Log("Move to customer state Check: " + moveResult);
         return moveResult;
     }
 
     private Node.NodeState TakeOrder()
     {
-        Debug.Log("Take oder check"+ _currentOrder.OrderedDish);
+        var State = Node.NodeState.RUNNING;
         if (CurrentState != StaffState.TakingOrder) return Node.NodeState.FAILURE;
-
         _orderTakingTimer += Time.deltaTime;
         if (_orderTakingTimer >= ORDER_TAKING_TIME)
         {
             _orderTakingTimer = 0;
-            TransitionToState(StaffState.MovingToKitchen);
-            return Node.NodeState.SUCCESS;
+            TransitionToState(StaffState.ReturningToWaitPosition);
+            State = Node.NodeState.SUCCESS;
+            Debug.Log("Move to customer state Check: " + State);
+            return State;
         }
 
-        return Node.NodeState.RUNNING;
+        Debug.Log("Move to customer state Check: " + State);
+        return State;
     }
 
-    private Node.NodeState MoveToKitchen()
+    private Node.NodeState MoveToKitchenCounter()
     {
-        Debug.Log("move to kitchen check");
         var moveResult = MoveTo(kitchenCounterPosition.position);
 
         if (moveResult == Node.NodeState.SUCCESS)
@@ -221,6 +231,7 @@ public class WaiterBehavior : MonoBehaviour
             TransitionToState(StaffState.WaitingForFood);
         }
 
+        Debug.Log($"move to kitchen check: {moveResult}");
         return moveResult;
     }
 
@@ -255,14 +266,19 @@ public class WaiterBehavior : MonoBehaviour
 
     private Node.NodeState ReturnToWaitPosition()
     {
-        var moveResult = MoveTo(waitingPosition.position);
-
-        if (moveResult == Node.NodeState.SUCCESS)
+        if (CurrentState == StaffState.ReturningToWaitPosition)
         {
-            TransitionToState(StaffState.Idle);
-        }
 
-        return moveResult;
+            var moveResult = MoveTo(waitingPosition.position);
+
+            if (moveResult == Node.NodeState.SUCCESS)
+            {
+                TransitionToState(StaffState.Idle);
+                return moveResult;
+            }
+            return moveResult;
+        }
+        return Node.NodeState.FAILURE;
     }
     #endregion
 
@@ -274,7 +290,7 @@ public class WaiterBehavior : MonoBehaviour
             RestaurantManager.Instance.CompleteOrder(_currentOrder);
             _currentOrder = null;
             _hasDeliveredFood = true;
-            TransitionToState(StaffState.ReturningToWaitPosition);
+            //TransitionToState(StaffState.ReturningToWaitPosition);
         }
     }
 
@@ -292,12 +308,12 @@ public class WaiterBehavior : MonoBehaviour
         Debug.Log($"Staff transitioning from {CurrentState} to {newState}");
 
         // Exit current state logic
-        switch (CurrentState)
-        {
-            case StaffState.DeliveringFood:
-                _hasDeliveredFood = false;
-                break;
-        }
+        //switch (CurrentState)
+        //{
+        //    case StaffState.DeliveringFood:
+        //        _hasDeliveredFood = false;
+        //        break;
+        //}
 
         // Enter new state logic
         switch (newState)
@@ -306,6 +322,15 @@ public class WaiterBehavior : MonoBehaviour
                 _currentOrder = null;
                 _orderTakingTimer = 0;
                 break;
+            case StaffState.MovingToCustomer:
+
+                if (_currentOrder == null) return;
+                     _currentOrder.IsCompleted = true;
+                break;
+            case StaffState.ReturningToWaitPosition:
+                _currentOrder = null;
+                CurrentState = StaffState.ReturningToWaitPosition;
+                break;
         }
 
         CurrentState = newState;
@@ -313,7 +338,7 @@ public class WaiterBehavior : MonoBehaviour
     #endregion
 
     #region Debug
-    private void OnDrawGizmos()
+    public void OnDrawGizmos()
     {
         if (agent != null && agent.hasPath)
         {

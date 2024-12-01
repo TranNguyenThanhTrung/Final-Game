@@ -22,7 +22,7 @@ public class CustommerBehavior : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private Animator animator;
     [SerializeField] private float animationBlendSpeed = 0.1f;
-    [SerializeField] private float seatTriggerDistance = 1.5f;
+    [SerializeField] private float seatTriggerDistance = 0.5f;
     [SerializeField] private float rotationSpeed = 10f;
     
     #endregion
@@ -177,7 +177,7 @@ public class CustommerBehavior : MonoBehaviour
 
         if (CurrentState == CustomerState.Idle)
         {
-            Debug.Log($"Starting movement to {destination}");
+            
             _agent.SetDestination(destination);
             CurrentState = CustomerState.Working;
         }
@@ -191,7 +191,7 @@ public class CustommerBehavior : MonoBehaviour
 
         if (distanceToTarget < ARRIVAL_THRESHOLD)
         {
-            Debug.Log($"Reached destination {destination}");
+            
             CurrentState = CustomerState.Idle;
             return Node.NodeState.SUCCESS;
         }
@@ -242,7 +242,7 @@ public class CustommerBehavior : MonoBehaviour
         {
             
             _currentSeat = nearestSeat;
-            Debug.Log($"Found and occupied seat at {_currentSeat.transform.position}");
+            
             return Node.NodeState.SUCCESS;
         }
 
