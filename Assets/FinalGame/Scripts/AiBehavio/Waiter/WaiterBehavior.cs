@@ -21,7 +21,9 @@ public class WaiterBehavior : MonoBehaviour
 
     [Header("Positions")]
     [SerializeField] private Transform kitchenCounterPosition;
+
     [SerializeField] private Transform waitingPosition;
+    private Seat _currentSeat;
     #endregion
     private static readonly int IsWalking = Animator.StringToHash("IsWalking");
     private static readonly int IsWalkingWithFood = Animator.StringToHash("IsWalkingWithFood");
@@ -44,10 +46,10 @@ public class WaiterBehavior : MonoBehaviour
     #region Private Fields
     private BehaviorTree _tree;
     private Order _currentOrder;
+    private CustommerBehavior _currentCustomer;
     private float _currentMovementBlend;
     private float _orderTakingTimer;
     private bool _hasDeliveredFood;
-
     #endregion
 
     #region Unity Lifecycle
@@ -98,7 +100,7 @@ public class WaiterBehavior : MonoBehaviour
         return new Selector(new List<Node>
         {
             CreateOrderHandlingSequence(),
-            new Leaf(ReturnToWaitPosition)
+            //new Leaf(ReturnToWaitPosition)
         });
     }
 
@@ -119,7 +121,7 @@ public class WaiterBehavior : MonoBehaviour
     {
         if (RestaurantManager.Instance != null)
         {
-
+            
             RestaurantManager.Instance.OnOrderReceived += HandleNewOrder;
         }
     }
@@ -136,11 +138,11 @@ public class WaiterBehavior : MonoBehaviour
     #region Event Handlers
     private void HandleNewOrder(Order order)
     {
-        if (CurrentState == StaffState.Idle && RestaurantManager.Instance.IsCustomerSeated(order.Customer))
+        if (CurrentState == StaffState.Idle)
         {
             _currentOrder = order;
             TransitionToState(StaffState.MovingToCustomer);
-            Debug.Log("Di toi cho kach" + CurrentState);
+            Debug.Log("Di toi cho kach"+ CurrentState);
         }
     }
     #endregion
@@ -158,7 +160,6 @@ public class WaiterBehavior : MonoBehaviour
 
         if (distanceToTarget < ARRIVAL_THRESHOLD)
         {
-            Debug.Log("toi noi");
             agent.ResetPath();
             return Node.NodeState.SUCCESS;
         }
@@ -178,19 +179,16 @@ public class WaiterBehavior : MonoBehaviour
     private Node.NodeState MoveToCustomer()
     {
         Debug.Log("move to custommer check");
-
         if (_currentOrder == null) return Node.NodeState.FAILURE;
 
         var customerPosition = _currentOrder.Customer.transform.position;
-
         var moveResult = MoveTo(customerPosition);
-        Debug.Log("move to custommer check: " + moveResult);
-
-
+        Debug.Log("move to custommer check"+ moveResult);
+        
+           
         if (moveResult == Node.NodeState.SUCCESS)
         {
             Debug.Log("Customer-----------------------------------------");
-
             TransitionToState(StaffState.TakingOrder);
         }
 
@@ -199,14 +197,13 @@ public class WaiterBehavior : MonoBehaviour
 
     private Node.NodeState TakeOrder()
     {
-        Debug.Log("Take oder check" + _currentOrder.OrderedDish);
+        Debug.Log("Take oder check"+ _currentOrder.OrderedDish);
         if (CurrentState != StaffState.TakingOrder) return Node.NodeState.FAILURE;
 
         _orderTakingTimer += Time.deltaTime;
         if (_orderTakingTimer >= ORDER_TAKING_TIME)
         {
             _orderTakingTimer = 0;
-
             TransitionToState(StaffState.MovingToKitchen);
             return Node.NodeState.SUCCESS;
         }
@@ -258,14 +255,11 @@ public class WaiterBehavior : MonoBehaviour
 
     private Node.NodeState ReturnToWaitPosition()
     {
-        Debug.Log("Attempting to return to wait position");
         var moveResult = MoveTo(waitingPosition.position);
 
         if (moveResult == Node.NodeState.SUCCESS)
         {
             TransitionToState(StaffState.Idle);
-            _currentOrder = null;
-            return Node.NodeState.SUCCESS;
         }
 
         return moveResult;
@@ -311,7 +305,6 @@ public class WaiterBehavior : MonoBehaviour
             case StaffState.Idle:
                 _currentOrder = null;
                 _orderTakingTimer = 0;
-
                 break;
         }
 

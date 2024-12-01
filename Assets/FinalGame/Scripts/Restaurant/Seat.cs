@@ -8,9 +8,10 @@ public class Seat : MonoBehaviour
     [SerializeField] private Transform chairTransform;
     [SerializeField] private Transform sitPosition;
     [SerializeField] private Vector3 seatRotation = Vector3.zero;
+
+
     [SerializeField] private bool availableChair = true;
-    public bool hasCustommer;
-   
+    public bool hasCustommer = false;
     public bool AvailableChair
     {
         get { return availableChair; }
