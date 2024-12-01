@@ -62,6 +62,11 @@ public class RestaurantManager : MonoBehaviour
     }
     #endregion
 
+    public bool IsCustomerSeated(CustommerBehavior customer)
+    {
+        return customer.CurrentState == CustommerBehavior.CustomerState.Sitting;
+    }
+
     private void InitializeSeat()
     {
         availableSeat.Clear();

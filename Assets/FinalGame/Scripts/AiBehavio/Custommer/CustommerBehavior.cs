@@ -53,7 +53,7 @@ public class CustommerBehavior : MonoBehaviour
     #region Private Fields
     private NavMeshAgent _agent;
     private BehaviorTree _tree;
-    private Seat _currentSeat;
+    public Seat _currentSeat;
 
     private bool _hasReachedFrontDoor;
     private bool _hasOrdered;
@@ -177,7 +177,6 @@ public class CustommerBehavior : MonoBehaviour
 
         if (CurrentState == CustomerState.Idle)
         {
-            Debug.Log($"Starting movement to {destination}");
             _agent.SetDestination(destination);
             CurrentState = CustomerState.Working;
         }
@@ -242,7 +241,6 @@ public class CustommerBehavior : MonoBehaviour
         {
             
             _currentSeat = nearestSeat;
-            Debug.Log($"Found and occupied seat at {_currentSeat.transform.position}");
             return Node.NodeState.SUCCESS;
         }
 
