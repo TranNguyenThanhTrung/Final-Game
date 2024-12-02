@@ -31,6 +31,7 @@ public class RestaurantManager : MonoBehaviour
     private List<Seat> availableSeat = new List<Seat>();
     private Queue<Order> pendingOrders = new Queue<Order>();
     private List<Order> activeOrders = new List<Order>();
+    private List<Order> CompletedOrders = new List<Order>();
     #endregion
     #region Events
     public static event Action OnSeatsChanged;
@@ -108,10 +109,10 @@ public class RestaurantManager : MonoBehaviour
         OnOrderReceived?.Invoke(newOrder);
 
     }
-
     //Chưa làm xong
     public void CompleteOrder(Order order)
     {
+        CompletedOrders.Add(order);
         if (activeOrders.Contains(order))
         {
             activeOrders.Remove(order);
@@ -120,6 +121,10 @@ public class RestaurantManager : MonoBehaviour
             // Add payment to restaurant money
             AddMoney(CalculateOrderPrice(order));
         }
+    }
+    public bool IsOrderCompleted(Order order)
+    {
+        return CompletedOrders.Contains(order);
     }
     //----------------------------------------------------------------
     private void AddMoney(decimal amount)
@@ -139,6 +144,21 @@ public class RestaurantManager : MonoBehaviour
             var order = pendingOrders.Dequeue();
             activeOrders.Add(order);
             // Additional processing logic here
+        }
+    }
+    public List<Order> GetPendingOrders()
+    {
+        return new List<Order>(pendingOrders);
+    }
+    public void RemoveCompletedOrder(Order order)
+    {
+        if (activeOrders.Contains(order))
+        {
+            activeOrders.Remove(order);
+            OnOrderCompleted?.Invoke(order);
+
+            // Thêm tiền vào doanh thu nhà hàng
+            AddMoney(CalculateOrderPrice(order));
         }
     }
     public Seat FindNearestAvailableSeat(Vector3 position)

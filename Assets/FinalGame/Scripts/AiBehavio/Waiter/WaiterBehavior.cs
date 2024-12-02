@@ -115,19 +115,20 @@ public class WaiterBehavior : MonoBehaviour
         //    new Leaf(MoveToCustomer),
         //    new Leaf(TakeOrder),
         //    new Leaf(MoveToKitchenCounter),
-        //    new Leaf(WaitForFood),
-        //    new Leaf(DeliverFood)
+        //    new Leaf(WaitForMultipleFood),
+        //    new Leaf(DeliverMultipleFood)
         //});
         return new Sequence(new List<Node>
         {
             new Leaf(FindSeatWithCustomer),      // Tìm ghế có khách
             new Leaf(MoveToCustomerSeat),        // Di chuyển đến ghế có khách
-            new Leaf(FindCustomerOrder),         // Tìm order của khách tại ghế đó
-            new Leaf(MoveToCustomer),            // Di chuyển đến khách
+            //new Leaf(FindCustomerOrder),         // Tìm order của khách tại ghế đó
+            //new Leaf(MoveToCustomer),            // Di chuyển đến khách
             new Leaf(TakeOrder),                 // Lấy order
+            new Leaf(CheckForMoreCustomerOrders),                 // Lấy order
             new Leaf(MoveToKitchenCounter),      // Di chuyển đến quầy bếp
-            new Leaf(WaitForFood),               // Chờ thức ăn
-            new Leaf(DeliverFood)                // Phục vụ thức ăn
+            new Leaf(WaitForMultipleFood),               // Chờ thức ăn
+            new Leaf(DeliverMultipleFood)                // Phục vụ thức ăn
         });
     }
 
@@ -156,7 +157,7 @@ public class WaiterBehavior : MonoBehaviour
         {
             _currentOrder = order;
             TransitionToState(StaffState.MovingToCustomer);
-            
+
         }
     }
     #endregion
@@ -183,53 +184,33 @@ public class WaiterBehavior : MonoBehaviour
     #endregion
 
     #region Behavior Tree Actions
-    private Node.NodeState FindNewOrder()
+    private Node.NodeState CheckForMoreCustomerOrders()
     {
-        if (_currentOrder != null)
-        {
+        // Tìm kiếm các ghế có khách chưa được phục vụ
+        var seatsWithCustomers = FindSeatsWithSeatedCustomers();
 
-            Debug.Log("CurrentOder----------- Thanh cong: " + _currentOrder);
-            return Node.NodeState.SUCCESS;
+        if (seatsWithCustomers != null && seatsWithCustomers.Count > 0)
+        {
+            // Nếu có khách chưa được phục vụ, tiếp tục quy trình
+            return Node.NodeState.RUNNING;
         }
         else
         {
-
-            Debug.Log("CurrentOder-----------That Bai: " + _currentOrder);
-            return Node.NodeState.FAILURE;
+            // Nếu không có khách nào cần phục vụ, chuyển sang trạng thái chờ đợi
+            TransitionToState(StaffState.ReturningToWaitPosition);
+            return Node.NodeState.SUCCESS;
         }
     }
-
-    private Node.NodeState MoveToCustomer()
-    {
-        var currentOrder = _currentOrder;
-        CurrentState = StaffState.MovingToCustomer;
-        if (_currentOrder == null) return Node.NodeState.FAILURE;
-        var customerPosition = _currentOrder.Customer.transform.position;
-        
-        var moveResult = MoveTo(customerPosition);
-        if (moveResult == Node.NodeState.SUCCESS)
-        {
-            TransitionToState(StaffState.TakingOrder);
-        }
-
-        Debug.Log("Move to customer state Check: " + moveResult);
-        return moveResult;
-    }
-
     private Node.NodeState TakeOrder()
     {
-        var State = Node.NodeState.RUNNING;
         if (CurrentState != StaffState.TakingOrder) return Node.NodeState.FAILURE;
-        _orderTakingTimer += Time.deltaTime;
 
-        if (_orderTakingTimer >= ORDER_TAKING_TIME)
+        if (_currentOrder.Customer != null && !_currentOrder.Customer.HasOrdered())
         {
-            Debug.Log($"Khach goi {_currentOrder.Customer.name}");
-            _orderTakingTimer = 0;
+            Debug.Log($"Da oder: --------------------------{_currentOrder.Customer.HasOrdered()}");
             TransitionToState(StaffState.MovingToKitchenCounter);
             return Node.NodeState.SUCCESS;
         }
-
         return Node.NodeState.RUNNING;
     }
 
@@ -246,8 +227,16 @@ public class WaiterBehavior : MonoBehaviour
         return moveResult;
     }
 
-    private Node.NodeState WaitForFood()
+    private Node.NodeState WaitForMultipleFood()
     {
+        var pendingOrders = RestaurantManager.Instance.GetPendingOrders();
+
+        if (pendingOrders.Count == 0)
+        {
+            TransitionToState(StaffState.ReturningToWaitPosition);
+            return Node.NodeState.SUCCESS;
+        }
+
         _orderTakingTimer += Time.deltaTime;
         if (_orderTakingTimer >= 3f)
         {
@@ -259,8 +248,17 @@ public class WaiterBehavior : MonoBehaviour
         return Node.NodeState.RUNNING;
     }
 
-    private Node.NodeState DeliverFood()
+    private Node.NodeState DeliverMultipleFood()
     {
+        var pendingOrders = RestaurantManager.Instance.GetPendingOrders();
+
+        if (pendingOrders.Count == 0)
+        {
+            TransitionToState(StaffState.ReturningToWaitPosition);
+            return Node.NodeState.SUCCESS;
+        }
+
+        _currentOrder = pendingOrders[0];
         if (_hasDeliveredFood) return Node.NodeState.SUCCESS;
 
         var customerPosition = _currentOrder.Customer.transform.position;
@@ -268,7 +266,9 @@ public class WaiterBehavior : MonoBehaviour
 
         if (moveResult == Node.NodeState.SUCCESS)
         {
+
             CompleteDelivery();
+            RestaurantManager.Instance.RemoveCompletedOrder(_currentOrder);
             return Node.NodeState.SUCCESS;
         }
 
@@ -305,8 +305,18 @@ public class WaiterBehavior : MonoBehaviour
 
             if (_currentSeat != null)
             {
-                Debug.Log($"Found seat with customer: {_currentOrder}");
-                return Node.NodeState.SUCCESS;
+                var customer = _currentSeat.GetCurrentCustomer();
+                if (customer != null && customer.CurrentOrder != null)
+                {
+                    _currentOrder = new Order
+                    {
+                        Customer = customer,
+                        OrderedDish = customer.CurrentOrder
+                    };
+                    Debug.Log($"Found seat with customer: {_currentOrder.Customer} {_currentOrder.OrderedDish}");
+
+                    return Node.NodeState.SUCCESS;
+                }
             }
         }
 
@@ -314,7 +324,7 @@ public class WaiterBehavior : MonoBehaviour
         Debug.Log($"No seats with customers found: {seatsWithCustomers}");
         return Node.NodeState.FAILURE;
     }
-    
+
     private Node.NodeState MoveToCustomerSeat()
     {
         if (_currentSeat == null) return Node.NodeState.FAILURE;
@@ -324,32 +334,11 @@ public class WaiterBehavior : MonoBehaviour
         if (moveResult == Node.NodeState.SUCCESS)
         {
             Debug.Log($"Reached seat {_currentSeat.seatID}");
-            TransitionToState(StaffState.MovingToCustomer);
+            TransitionToState(StaffState.TakingOrder);
         }
 
         return moveResult;
     }
-    private Node.NodeState FindCustomerOrder()
-    {
-        if (_currentSeat == null) return Node.NodeState.FAILURE;
-
-        var customer = _currentSeat.GetCurrentCustomer();
-        if (customer != null && !customer.HasOrdered())
-        {
-            _currentOrder = new Order
-            {
-                Customer = customer,
-                CustomerSeat = _currentSeat
-            };
-
-            Debug.Log($"Found unordered customer at seat {_currentSeat.seatID}");
-            return Node.NodeState.SUCCESS;
-        }
-
-        Debug.Log("No unordered customer found at seat");
-        return Node.NodeState.FAILURE;
-    }
-
     // Các phương thức hỗ trợ mới
     private List<Seat> FindSeatsWithSeatedCustomers()
     {
@@ -358,10 +347,10 @@ public class WaiterBehavior : MonoBehaviour
         foreach (var seat in RestaurantManager.Instance.GetAllSeats())
         {
             var customer = seat.GetCurrentCustomer();
-            if (customer != null && !seat.AvailableChair && customer.HasOrdered())
+            if (customer != null && !seat.AvailableChair && customer.HasOrdered()&&!RestaurantManager.Instance.IsOrderCompleted(customer.CurrentOrder))
             {
-                Debug.Log($"Found seated unordered customer at seat {seat.seatID}");
                 seatsWithSeatedCustomers.Add(seat);
+                Debug.Log($"Found seated unordered customer at seat {seat.seatID} {seatsWithSeatedCustomers.Count}");
             }
         }
 
@@ -438,6 +427,9 @@ public class WaiterBehavior : MonoBehaviour
             case StaffState.ReturningToWaitPosition:
                 _currentOrder = null;
                 CurrentState = StaffState.ReturningToWaitPosition;
+                break;
+            case StaffState.TakingOrder:
+
                 break;
             case StaffState.MovingToKitchenCounter:
 
