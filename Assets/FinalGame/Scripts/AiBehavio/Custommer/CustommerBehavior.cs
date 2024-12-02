@@ -24,9 +24,9 @@ public class CustommerBehavior : MonoBehaviour
     [SerializeField] private float animationBlendSpeed = 0.1f;
     [SerializeField] private float seatTriggerDistance = 0.5f;
     [SerializeField] private float rotationSpeed = 10f;
-    
+
     #endregion
-    
+
     #region Animation Parameters
     private static readonly int IsWalking = Animator.StringToHash("IsWalking");
     private static readonly int IsSitting = Animator.StringToHash("IsSitting");
@@ -86,7 +86,7 @@ public class CustommerBehavior : MonoBehaviour
     {
         if (RestaurantManager.Instance != null)
         {
-            
+
             frontDoor = RestaurantManager.Instance.frontDoor;
             dispawnPos = RestaurantManager.Instance.customerDispawnPoint;
         }
@@ -177,7 +177,7 @@ public class CustommerBehavior : MonoBehaviour
 
         if (CurrentState == CustomerState.Idle)
         {
-            
+
             _agent.SetDestination(destination);
             CurrentState = CustomerState.Working;
         }
@@ -191,7 +191,7 @@ public class CustommerBehavior : MonoBehaviour
 
         if (distanceToTarget < ARRIVAL_THRESHOLD)
         {
-            
+
             CurrentState = CustomerState.Idle;
             return Node.NodeState.SUCCESS;
         }
@@ -240,9 +240,9 @@ public class CustommerBehavior : MonoBehaviour
         var nearestSeat = RestaurantManager.Instance.FindNearestAvailableSeat(transform.position);
         if (nearestSeat != null && nearestSeat.TryOccupySeat(this))
         {
-            
+
             _currentSeat = nearestSeat;
-            
+
             return Node.NodeState.SUCCESS;
         }
 
@@ -290,10 +290,9 @@ public class CustommerBehavior : MonoBehaviour
     private void TeleportToSeat()
     {
         // Tắt NavMeshAgent để có thể teleport
-        Debug.Log("Ngoi vao ghe 1");
         _currentSeat.hasCustommer = true;
         _agent.enabled = false;
-        _hasOrdered = false;
+        _hasOrdered = true;
         switch (_currentSeat.seatID)
         {
             case 1:
@@ -342,13 +341,13 @@ public class CustommerBehavior : MonoBehaviour
     }
     private Node.NodeState OrderFood()
     {
-        if (!_hasOrdered)
+        if (_hasOrdered && !_isWaitingForFood)
         {
             CurrentOrder = (Dish)UnityEngine.Random.Range(0, Enum.GetValues(typeof(Dish)).Length);
 
             RestaurantManager.Instance.SubmitOrder(this, CurrentOrder);
             Debug.Log($"Ordering: {CurrentOrder}{this}");
-            _hasOrdered = true;
+            _hasOrdered = false;
             _isWaitingForFood = true;
             CurrentWaitTime = 0f;
             return Node.NodeState.RUNNING;
@@ -449,7 +448,7 @@ public class CustommerBehavior : MonoBehaviour
     #endregion
 
     #region State Transitions
-    
+
     private void TransitionToState(CustomerState newState)
     {
         // Exit current state
@@ -479,6 +478,11 @@ public class CustommerBehavior : MonoBehaviour
 
     public bool HasOrdered()
     {
-        return _hasOrdered;
+        while (_hasOrdered == true)
+        {
+
+            return _hasOrdered;
+        }
+        return false;
     }
 }

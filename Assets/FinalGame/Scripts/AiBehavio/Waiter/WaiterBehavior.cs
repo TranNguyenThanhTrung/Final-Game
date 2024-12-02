@@ -156,7 +156,7 @@ public class WaiterBehavior : MonoBehaviour
         {
             _currentOrder = order;
             TransitionToState(StaffState.MovingToCustomer);
-            Debug.Log("Di toi cho kach " + CurrentState);
+            
         }
     }
     #endregion
@@ -205,7 +205,7 @@ public class WaiterBehavior : MonoBehaviour
         CurrentState = StaffState.MovingToCustomer;
         if (_currentOrder == null) return Node.NodeState.FAILURE;
         var customerPosition = _currentOrder.Customer.transform.position;
-        Debug.Log($"CustomerPosition: {customerPosition}");
+        
         var moveResult = MoveTo(customerPosition);
         if (moveResult == Node.NodeState.SUCCESS)
         {
@@ -296,7 +296,7 @@ public class WaiterBehavior : MonoBehaviour
     private Node.NodeState FindSeatWithCustomer()
     {
         // Tìm ghế có khách nhưng chưa có order
-        var seatsWithCustomers = FindSeatsWithUnorderedCustomers();
+        var seatsWithCustomers = FindSeatsWithSeatedCustomers();
 
         if (seatsWithCustomers != null && seatsWithCustomers.Count > 0)
         {
@@ -305,7 +305,7 @@ public class WaiterBehavior : MonoBehaviour
 
             if (_currentSeat != null)
             {
-                Debug.Log($"Found seat with customer: {_currentSeat.seatID}");
+                Debug.Log($"Found seat with customer: {_currentOrder}");
                 return Node.NodeState.SUCCESS;
             }
         }
@@ -314,6 +314,7 @@ public class WaiterBehavior : MonoBehaviour
         Debug.Log($"No seats with customers found: {seatsWithCustomers}");
         return Node.NodeState.FAILURE;
     }
+    
     private Node.NodeState MoveToCustomerSeat()
     {
         if (_currentSeat == null) return Node.NodeState.FAILURE;
@@ -350,22 +351,21 @@ public class WaiterBehavior : MonoBehaviour
     }
 
     // Các phương thức hỗ trợ mới
-    private List<Seat> FindSeatsWithUnorderedCustomers()
+    private List<Seat> FindSeatsWithSeatedCustomers()
     {
-        var seatsWithCustomers = new List<Seat>();
+        var seatsWithSeatedCustomers = new List<Seat>();
 
         foreach (var seat in RestaurantManager.Instance.GetAllSeats())
         {
             var customer = seat.GetCurrentCustomer();
-            Debug.Log($"Found unordered {customer}");
-            if (customer != null && !customer.HasOrdered())
+            if (customer != null && !seat.AvailableChair && customer.HasOrdered())
             {
-                Debug.Log($"Found unordered customer at seat {seat.seatID}");
-                seatsWithCustomers.Add(seat);
+                Debug.Log($"Found seated unordered customer at seat {seat.seatID}");
+                seatsWithSeatedCustomers.Add(seat);
             }
         }
-        Debug.Log($"Found unordered customers{seatsWithCustomers}");
-        return seatsWithCustomers;
+
+        return seatsWithSeatedCustomers;
     }
 
     private Seat FindNearestSeatWithCustomer(List<Seat> seats)
