@@ -165,6 +165,10 @@ public class RestaurantManager : MonoBehaviour
     {
         return availableSeat.Any(Seat => Seat.AvailableChair);
     }
+    public List<Seat> GetAllSeats()
+    {
+        return availableSeat;
+    }
     public void DebugPrintStatus()
     {
         Debug.Log($"Restaurant Status:");

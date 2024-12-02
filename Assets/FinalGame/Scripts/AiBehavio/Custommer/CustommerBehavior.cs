@@ -293,6 +293,7 @@ public class CustommerBehavior : MonoBehaviour
         Debug.Log("Ngoi vao ghe 1");
         _currentSeat.hasCustommer = true;
         _agent.enabled = false;
+        _hasOrdered = false;
         switch (_currentSeat.seatID)
         {
             case 1:
@@ -347,7 +348,6 @@ public class CustommerBehavior : MonoBehaviour
 
             RestaurantManager.Instance.SubmitOrder(this, CurrentOrder);
             Debug.Log($"Ordering: {CurrentOrder}{this}");
-
             _hasOrdered = true;
             _isWaitingForFood = true;
             CurrentWaitTime = 0f;
@@ -476,4 +476,9 @@ public class CustommerBehavior : MonoBehaviour
     }
 
     #endregion
+
+    public bool HasOrdered()
+    {
+        return _hasOrdered;
+    }
 }

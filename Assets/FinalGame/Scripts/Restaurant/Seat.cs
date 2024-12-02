@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class Seat : MonoBehaviour
 {
     public int seatID;
-    [SerializeField] private CustommerBehavior currentCustomer;
+    [SerializeField] public CustommerBehavior currentCustomer;
     [SerializeField] private Transform chairTransform;
     [SerializeField] private Transform sitPosition;
     [SerializeField] private Vector3 seatRotation = Vector3.zero;
@@ -31,6 +31,7 @@ public class Seat : MonoBehaviour
     public void Awake()
     {
         chairTransform = gameObject.GetComponent<Transform>();
+
     }
     public void OnValidate()
     {
