@@ -57,6 +57,7 @@ public class CustommerBehavior : MonoBehaviour
 
     private bool _hasReachedFrontDoor;
     private bool _hasOrdered;
+    private bool _hasBeenServed = false;
     private bool _isWaitingForFood;
     private bool _isServed;
     private bool _isRotatingToTable;
@@ -475,14 +476,16 @@ public class CustommerBehavior : MonoBehaviour
     }
 
     #endregion
-
     public bool HasOrdered()
     {
-        while (_hasOrdered == true)
-        {
-
-            return _hasOrdered;
-        }
-        return false;
+        return _hasOrdered;
+    }
+    public bool HasBeenServed()
+    {
+        return _hasBeenServed;
+    }
+    public void MarkAsServed()
+    {
+        _hasBeenServed = false;
     }
 }

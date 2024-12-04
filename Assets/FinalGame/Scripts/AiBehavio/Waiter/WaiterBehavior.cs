@@ -2,6 +2,7 @@
 using UnityEngine.AI;
 using System.Collections.Generic;
 using UnityEngine.UIElements.Experimental;
+using System.Linq;
 
 public class WaiterBehavior : MonoBehaviour
 {
@@ -122,8 +123,6 @@ public class WaiterBehavior : MonoBehaviour
         {
             new Leaf(FindSeatWithCustomer),      // Tìm ghế có khách
             new Leaf(MoveToCustomerSeat),        // Di chuyển đến ghế có khách
-            //new Leaf(FindCustomerOrder),         // Tìm order của khách tại ghế đó
-            //new Leaf(MoveToCustomer),            // Di chuyển đến khách
             new Leaf(TakeOrder),                 // Lấy order
             new Leaf(CheckForMoreCustomerOrders),                 // Lấy order
             new Leaf(MoveToKitchenCounter),      // Di chuyển đến quầy bếp
@@ -205,9 +204,9 @@ public class WaiterBehavior : MonoBehaviour
     {
         if (CurrentState != StaffState.TakingOrder) return Node.NodeState.FAILURE;
 
-        if (_currentOrder.Customer != null && !_currentOrder.Customer.HasOrdered())
+        if (_currentOrder.Customer != null && !_currentOrder.Customer.HasBeenServed())
         {
-            Debug.Log($"Da oder: --------------------------{_currentOrder.Customer.HasOrdered()}");
+            Debug.Log($"Da oder: --------------------------{_currentOrder.Customer.HasBeenServed()}");
             TransitionToState(StaffState.MovingToKitchenCounter);
             return Node.NodeState.SUCCESS;
         }
@@ -266,7 +265,7 @@ public class WaiterBehavior : MonoBehaviour
 
         if (moveResult == Node.NodeState.SUCCESS)
         {
-
+            _currentOrder.Customer.MarkAsServed();
             CompleteDelivery();
             RestaurantManager.Instance.RemoveCompletedOrder(_currentOrder);
             return Node.NodeState.SUCCESS;
@@ -300,27 +299,36 @@ public class WaiterBehavior : MonoBehaviour
 
         if (seatsWithCustomers != null && seatsWithCustomers.Count > 0)
         {
-            // Chọn ghế gần nhất
-            _currentSeat = FindNearestSeatWithCustomer(seatsWithCustomers);
-
-            if (_currentSeat != null)
+            TransitionToState(StaffState.MovingToCustomer);
+            var unservedSeats = seatsWithCustomers
+           .Where(seat=>
+           {
+               var customer = seat.GetCurrentCustomer();
+               return customer != null && !customer.HasBeenServed() && customer.HasOrdered();
+           }).ToList();
+            Debug.Log(unservedSeats.Count);
+            if (unservedSeats.Count > 0)
             {
-                var customer = _currentSeat.GetCurrentCustomer();
-                if (customer != null && customer.CurrentOrder != null)
-                {
-                    _currentOrder = new Order
-                    {
-                        Customer = customer,
-                        OrderedDish = customer.CurrentOrder
-                    };
-                    Debug.Log($"Found seat with customer: {_currentOrder.Customer} {_currentOrder.OrderedDish}");
+                _currentSeat = FindNearestSeatWithCustomer(seatsWithCustomers);
 
-                    return Node.NodeState.SUCCESS;
+                if (_currentSeat != null)
+                {
+                    var customer = _currentSeat.GetCurrentCustomer();
+                    if (customer != null && customer.CurrentOrder != null)
+                    {
+                        _currentOrder = new Order
+                        {
+                            Customer = customer,
+                            OrderedDish = customer.CurrentOrder
+                        };
+                        Debug.Log($"Found seat with customer: {_currentOrder.Customer} {_currentOrder.OrderedDish}");
+
+                        return Node.NodeState.SUCCESS;
+                    }
                 }
             }
         }
-
-
+        TransitionToState(StaffState.ReturningToWaitPosition);
         Debug.Log($"No seats with customers found: {seatsWithCustomers}");
         return Node.NodeState.FAILURE;
     }
@@ -347,7 +355,7 @@ public class WaiterBehavior : MonoBehaviour
         foreach (var seat in RestaurantManager.Instance.GetAllSeats())
         {
             var customer = seat.GetCurrentCustomer();
-            if (customer != null && !seat.AvailableChair && customer.HasOrdered()&&!RestaurantManager.Instance.IsOrderCompleted(customer.CurrentOrder))
+            if (customer != null && !seat.AvailableChair && customer.HasOrdered())
             {
                 seatsWithSeatedCustomers.Add(seat);
                 Debug.Log($"Found seated unordered customer at seat {seat.seatID} {seatsWithSeatedCustomers.Count}");
