@@ -3,15 +3,8 @@ using UnityEngine.AI;
 using System.Collections.Generic;
 using UnityEngine.UIElements.Experimental;
 using System.Linq;
-
 public class WaiterBehavior : MonoBehaviour
 {
-    #region Constants
-    private const float ARRIVAL_THRESHOLD = 1.5f;
-    private const float MOVEMENT_THRESHOLD = 0.1f;
-    private const float ORDER_TAKING_TIME = 1f;
-    #endregion
-
     #region SerializeFields
     [Header("Navigation")]
     [SerializeField] private NavMeshAgent agent;
@@ -27,9 +20,19 @@ public class WaiterBehavior : MonoBehaviour
     [SerializeField] private Transform waitingPosition;
     private Seat _currentSeat;
     #endregion
+
+    #region Constants
+    private const float ARRIVAL_THRESHOLD = 1.5f;
+    private const float MOVEMENT_THRESHOLD = 0.1f;
+    private const float ORDER_TAKING_TIME = 1f;
+    #endregion
+
+    #region Static Animation Hash
     private static readonly int IsWalking = Animator.StringToHash("IsWalking");
     private static readonly int IsWalkingWithFood = Animator.StringToHash("IsWalkingWithFood");
     private static readonly int MovementSpeed = Animator.StringToHash("MovementSpeed");
+    #endregion
+
     #region State Management
     public enum StaffState
     {
@@ -42,7 +45,6 @@ public class WaiterBehavior : MonoBehaviour
         DeliveringFood,
         ReturningToWaitPosition
     }
-
     public StaffState CurrentState { get; private set; } = StaffState.Idle;
     #endregion
 
@@ -109,25 +111,16 @@ public class WaiterBehavior : MonoBehaviour
 
     private Node CreateOrderHandlingSequence()
     {
-        // Sửa lại logic
-        //return new Sequence(new List<Node>
-        //{
-        //    new Leaf(FindNewOrder),
-        //    new Leaf(MoveToCustomer),
-        //    new Leaf(TakeOrder),
-        //    new Leaf(MoveToKitchenCounter),
-        //    new Leaf(WaitForMultipleFood),
-        //    new Leaf(DeliverMultipleFood)
-        //});
+       
         return new Sequence(new List<Node>
         {
-            new Leaf(FindSeatWithCustomer),      // Tìm ghế có khách
-            new Leaf(MoveToCustomerSeat),        // Di chuyển đến ghế có khách
-            new Leaf(TakeOrder),                 // Lấy order
-            new Leaf(CheckForMoreCustomerOrders),                 // Lấy order
-            new Leaf(MoveToKitchenCounter),      // Di chuyển đến quầy bếp
-            new Leaf(WaitForMultipleFood),               // Chờ thức ăn
-            new Leaf(DeliverMultipleFood)                // Phục vụ thức ăn
+            new Leaf(FindSeatWithCustomer),      
+            new Leaf(MoveToCustomerSeat),        
+            new Leaf(TakeOrder),                 
+            new Leaf(CheckForMoreCustomerOrders),                
+            //new Leaf(WaitForMultipleFood),               // Chờ thức ăn
+            //new Leaf(MoveToKitchenCounter),    // Di chuyển đến quầy bếp
+            //new Leaf(DeliverMultipleFood)                // Phục vụ thức ăn
         });
     }
 
@@ -161,27 +154,6 @@ public class WaiterBehavior : MonoBehaviour
     }
     #endregion
 
-    #region Navigation
-    private Node.NodeState MoveTo(Vector3 destination)
-    {
-        float distanceToTarget = Vector3.Distance(transform.position, destination);
-        if (!agent.hasPath)
-        {
-            Debug.Log($"{agent.name}{agent.hasPath}");
-            agent.SetDestination(destination);
-            return Node.NodeState.RUNNING;
-        }
-
-        if (distanceToTarget < ARRIVAL_THRESHOLD)
-        {
-            Debug.Log($"{agent.name}{agent.hasPath}");
-            agent.ResetPath();
-            return Node.NodeState.SUCCESS;
-        }
-        return Node.NodeState.RUNNING;
-    }
-    #endregion
-
     #region Behavior Tree Actions
     private Node.NodeState CheckForMoreCustomerOrders()
     {
@@ -201,6 +173,7 @@ public class WaiterBehavior : MonoBehaviour
         TransitionToState(StaffState.ReturningToWaitPosition);
         return Node.NodeState.SUCCESS;
     }
+
     private Node.NodeState TakeOrder()
     {
         if (CurrentState != StaffState.TakingOrder) return Node.NodeState.FAILURE;
@@ -212,72 +185,6 @@ public class WaiterBehavior : MonoBehaviour
             TransitionToState(StaffState.MovingToKitchenCounter);
             return Node.NodeState.SUCCESS;
         }
-        return Node.NodeState.RUNNING;
-    }
-
-    private Node.NodeState MoveToKitchenCounter()
-    {
-        var moveResult = MoveTo(kitchenCounterPosition.position);
-
-        if (moveResult == Node.NodeState.SUCCESS)
-        {
-            TransitionToState(StaffState.WaitingForFood);
-        }
-
-        Debug.Log($"move to kitchenc counter check: {moveResult}");
-        return moveResult;
-    }
-
-    private Node.NodeState WaitForMultipleFood()
-    {
-        var pendingOrders = RestaurantManager.Instance.GetPendingOrders();
-
-        if (pendingOrders.Count == 0)
-        {
-            TransitionToState(StaffState.ReturningToWaitPosition);
-            return Node.NodeState.SUCCESS;
-        }
-
-        _orderTakingTimer += Time.deltaTime;
-        if (_orderTakingTimer >= 3f)
-        {
-            _orderTakingTimer = 0;
-            TransitionToState(StaffState.DeliveringFood);
-            return Node.NodeState.SUCCESS;
-        }
-
-        return Node.NodeState.RUNNING;
-    }
-
-    private Node.NodeState DeliverMultipleFood()
-    {
-        var pendingOrders = RestaurantManager.Instance.GetPendingOrders();
-
-        if (pendingOrders.Count == 0)
-        {
-            TransitionToState(StaffState.ReturningToWaitPosition);
-            return Node.NodeState.SUCCESS;
-        }
-
-        _currentOrder = pendingOrders[0];
-        if (_hasDeliveredFood) return Node.NodeState.SUCCESS;
-
-        if (_currentOrder?.Customer == null)
-        {
-            RestaurantManager.Instance.RemoveCompletedOrder(_currentOrder);
-            return Node.NodeState.FAILURE;
-        }
-
-        var customerPosition = _currentOrder.Customer.transform.position;
-        var moveResult = MoveTo(customerPosition);
-
-        if (moveResult == Node.NodeState.SUCCESS)
-        {
-            CompleteDelivery();
-            RestaurantManager.Instance.RemoveCompletedOrder(_currentOrder);
-            return Node.NodeState.SUCCESS;
-        }
-
         return Node.NodeState.RUNNING;
     }
 
@@ -297,8 +204,7 @@ public class WaiterBehavior : MonoBehaviour
         }
         return Node.NodeState.FAILURE;
     }
-    #endregion
-    #region BehaviorTree 2
+
     private Node.NodeState FindSeatWithCustomer()
     {
         // Tìm ghế có khách nhưng chưa có order
@@ -354,7 +260,7 @@ public class WaiterBehavior : MonoBehaviour
 
         return moveResult;
     }
-    // Các phương thức hỗ trợ mới
+
     private List<Seat> FindSeatsWithSeatedCustomers()
     {
         var seatsWithSeatedCustomers = new List<Seat>();
@@ -395,8 +301,27 @@ public class WaiterBehavior : MonoBehaviour
         return nearestSeat;
     }
 
-    // Cần thêm phương thức này vào CustommerBehavior
+    #endregion
 
+    #region Navigation
+    private Node.NodeState MoveTo(Vector3 destination)
+    {
+        float distanceToTarget = Vector3.Distance(transform.position, destination);
+        if (!agent.hasPath)
+        {
+            Debug.Log($"{agent.name}{agent.hasPath}");
+            agent.SetDestination(destination);
+            return Node.NodeState.RUNNING;
+        }
+
+        if (distanceToTarget < ARRIVAL_THRESHOLD)
+        {
+            Debug.Log($"{agent.name}{agent.hasPath}");
+            agent.ResetPath();
+            return Node.NodeState.SUCCESS;
+        }
+        return Node.NodeState.RUNNING;
+    }
     #endregion
 
     #region Helper Methods
@@ -459,7 +384,7 @@ public class WaiterBehavior : MonoBehaviour
         CurrentState = newState;
     }
     #endregion
-
+    
     #region Debug
     public void OnDrawGizmos()
     {

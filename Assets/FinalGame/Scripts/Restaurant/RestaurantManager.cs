@@ -24,7 +24,7 @@ public class RestaurantManager : MonoBehaviour
     public GameObject customerDispawnPoint;
     public int Level { get; private set; } = 1;
     public decimal Money { get; private set; } = 1000;
-    public List<Staff> Staff { get; private set; } = new List<Staff>();
+    
     private int currentCustomerCount = 0;
     #endregion
     #region Private Fields

@@ -64,7 +64,7 @@ public class CustommerBehavior : MonoBehaviour
     private float _timeStuck;
     private float _currentMovementBlend;
     #endregion
-    //-------- 
+    //-------------------------------------
     #region Unity Lifecycle
     private void Awake()
     {
@@ -428,6 +428,52 @@ public class CustommerBehavior : MonoBehaviour
     }
     #endregion
 
+    #region Condition
+    public bool HasOrdered()
+    {
+        return _hasOrdered;
+    }
+
+    public bool HasBeenServed()
+    {
+        return _hasBeenServed;
+    }
+
+    public void MarkAsServed()
+    {
+        _hasBeenServed = true;
+    }
+    #endregion
+
+    #region State Transitions
+
+    private void TransitionToState(CustomerState newState)
+    {
+        // Exit current state
+        switch (CurrentState)
+        {
+            case CustomerState.Sitting:
+                PlayStandAnimation();
+                break;
+        }
+
+        // Enter new state
+        switch (newState)
+        {
+            case CustomerState.Walking:
+                animator.SetBool(IsWalking, true);
+                break;
+            case CustomerState.Sitting:
+                PlaySitAnimation();
+                break;
+
+        }
+
+        CurrentState = newState;
+    }
+
+    #endregion
+
     #region Debug Visualization
 #if UNITY_EDITOR
     private void OnDrawGizmos()
@@ -459,45 +505,4 @@ public class CustommerBehavior : MonoBehaviour
     }
 #endif
     #endregion
-
-    #region State Transitions
-
-    private void TransitionToState(CustomerState newState)
-    {
-        // Exit current state
-        switch (CurrentState)
-        {
-            case CustomerState.Sitting:
-                PlayStandAnimation();
-                break;
-        }
-
-        // Enter new state
-        switch (newState)
-        {
-            case CustomerState.Walking:
-                animator.SetBool(IsWalking, true);
-                break;
-            case CustomerState.Sitting:
-                PlaySitAnimation();
-                break;
-
-        }
-
-        CurrentState = newState;
-    }
-
-    #endregion
-    public bool HasOrdered()
-    {
-        return _hasOrdered;
-    }
-    public bool HasBeenServed()
-    {
-        return _hasBeenServed;
-    }
-    public void MarkAsServed()
-    {
-        _hasBeenServed = true;
-    }
 }
