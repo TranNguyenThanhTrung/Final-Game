@@ -7,7 +7,7 @@ using System.Linq;
 public class WaiterBehavior : MonoBehaviour
 {
     #region Constants
-    private const float ARRIVAL_THRESHOLD = 0.5f;
+    private const float ARRIVAL_THRESHOLD = 1.5f;
     private const float MOVEMENT_THRESHOLD = 0.1f;
     private const float ORDER_TAKING_TIME = 1f;
     #endregion
@@ -185,20 +185,21 @@ public class WaiterBehavior : MonoBehaviour
     #region Behavior Tree Actions
     private Node.NodeState CheckForMoreCustomerOrders()
     {
-        // Tìm kiếm các ghế có khách chưa được phục vụ
-        var seatsWithCustomers = FindSeatsWithSeatedCustomers();
+        var unservedSeats = RestaurantManager.Instance.GetAllSeats()
+            .Where(seat =>
+            {
+                var customer = seat.GetCurrentCustomer();
+                return customer != null && !seat.AvailableChair && !customer.HasBeenServed();
+            })
+            .ToList();
 
-        if (seatsWithCustomers != null && seatsWithCustomers.Count > 0)
+        if (unservedSeats.Any())
         {
-            // Nếu có khách chưa được phục vụ, tiếp tục quy trình
             return Node.NodeState.RUNNING;
         }
-        else
-        {
-            // Nếu không có khách nào cần phục vụ, chuyển sang trạng thái chờ đợi
-            TransitionToState(StaffState.ReturningToWaitPosition);
-            return Node.NodeState.SUCCESS;
-        }
+
+        TransitionToState(StaffState.ReturningToWaitPosition);
+        return Node.NodeState.SUCCESS;
     }
     private Node.NodeState TakeOrder()
     {
@@ -206,6 +207,7 @@ public class WaiterBehavior : MonoBehaviour
 
         if (_currentOrder.Customer != null && !_currentOrder.Customer.HasBeenServed())
         {
+            _currentOrder.Customer.MarkAsServed();
             Debug.Log($"Da oder: --------------------------{_currentOrder.Customer.HasBeenServed()}");
             TransitionToState(StaffState.MovingToKitchenCounter);
             return Node.NodeState.SUCCESS;
@@ -260,12 +262,17 @@ public class WaiterBehavior : MonoBehaviour
         _currentOrder = pendingOrders[0];
         if (_hasDeliveredFood) return Node.NodeState.SUCCESS;
 
+        if (_currentOrder?.Customer == null)
+        {
+            RestaurantManager.Instance.RemoveCompletedOrder(_currentOrder);
+            return Node.NodeState.FAILURE;
+        }
+
         var customerPosition = _currentOrder.Customer.transform.position;
         var moveResult = MoveTo(customerPosition);
 
         if (moveResult == Node.NodeState.SUCCESS)
         {
-            _currentOrder.Customer.MarkAsServed();
             CompleteDelivery();
             RestaurantManager.Instance.RemoveCompletedOrder(_currentOrder);
             return Node.NodeState.SUCCESS;
@@ -314,7 +321,7 @@ public class WaiterBehavior : MonoBehaviour
                 if (_currentSeat != null)
                 {
                     var customer = _currentSeat.GetCurrentCustomer();
-                    if (customer != null && customer.CurrentOrder != null)
+                    if (customer != null)
                     {
                         _currentOrder = new Order
                         {
@@ -358,8 +365,13 @@ public class WaiterBehavior : MonoBehaviour
             if (customer != null && !seat.AvailableChair && customer.HasOrdered())
             {
                 seatsWithSeatedCustomers.Add(seat);
-                Debug.Log($"Found seated unordered customer at seat {seat.seatID} {seatsWithSeatedCustomers.Count}");
+                Debug.Log($"nhan ghe {seat.currentCustomer}");
             }
+            if (customer != null && !seat.AvailableChair&& customer.HasBeenServed())
+            {
+                seatsWithSeatedCustomers.Remove(seat);
+                Debug.Log($"bo ghe {seat.currentCustomer}");
+            }    
         }
 
         return seatsWithSeatedCustomers;

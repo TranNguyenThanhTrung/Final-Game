@@ -98,16 +98,22 @@ public class RestaurantManager : MonoBehaviour
     }
     public void SubmitOrder(CustommerBehavior customer, Dish dish)
     {
+        if (customer == null)
+        {
+            Debug.LogWarning("Attempted to submit order for null customer.");
+            return;
+        }
+
         Order newOrder = new Order
         {
             Customer = customer,
             OrderedDish = dish,
-            OrderTime = Time.time
+            OrderTime = Time.time,
+            CustomerSeat = customer.GetCurrentSeat() // You'll need to add this method to CustomerBehavior
         };
 
         pendingOrders.Enqueue(newOrder);
         OnOrderReceived?.Invoke(newOrder);
-
     }
     //Chưa làm xong
     public void CompleteOrder(Order order)

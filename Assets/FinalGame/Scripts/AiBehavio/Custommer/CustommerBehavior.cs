@@ -18,6 +18,7 @@ public class CustommerBehavior : MonoBehaviour
     [Header("Navigation Points")]
     [SerializeField] private GameObject frontDoor;
     [SerializeField] private GameObject dispawnPos;
+    [SerializeField] private bool _hasBeenServed = false;
 
     [Header("Animation")]
     [SerializeField] private Animator animator;
@@ -57,7 +58,6 @@ public class CustommerBehavior : MonoBehaviour
 
     private bool _hasReachedFrontDoor;
     private bool _hasOrdered;
-    private bool _hasBeenServed = false;
     private bool _isWaitingForFood;
     private bool _isServed;
     private bool _isRotatingToTable;
@@ -174,11 +174,16 @@ public class CustommerBehavior : MonoBehaviour
     #region Navigation
     private Node.NodeState MoveTo(Vector3 destination)
     {
+        if (_agent == null)
+        {
+            Debug.LogError("NavMeshAgent is missing!");
+            return Node.NodeState.FAILURE;
+        }
+
         float distanceToTarget = Vector3.Distance(transform.position, destination);
 
         if (CurrentState == CustomerState.Idle)
         {
-
             _agent.SetDestination(destination);
             CurrentState = CustomerState.Working;
         }
@@ -192,7 +197,6 @@ public class CustommerBehavior : MonoBehaviour
 
         if (distanceToTarget < ARRIVAL_THRESHOLD)
         {
-
             CurrentState = CustomerState.Idle;
             return Node.NodeState.SUCCESS;
         }
@@ -390,12 +394,20 @@ public class CustommerBehavior : MonoBehaviour
 
         return moveState;
     }
+    public Seat GetCurrentSeat()
+    {
+        return _currentSeat;
+    }
     #endregion
 
     #region Private Helper Methods
     public void ResetState()
     {
         _hasReachedFrontDoor = false;
+        _hasOrdered = false;
+        _hasBeenServed = false;
+        _isWaitingForFood = false;
+        _isServed = false;
         CurrentState = CustomerState.Idle;
         _agent?.ResetPath();
     }
@@ -486,6 +498,6 @@ public class CustommerBehavior : MonoBehaviour
     }
     public void MarkAsServed()
     {
-        _hasBeenServed = false;
+        _hasBeenServed = true;
     }
 }
