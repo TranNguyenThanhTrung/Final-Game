@@ -152,20 +152,18 @@ public class ChefBehavior : MonoBehaviour
         var pendingOrders = RestaurantManager.Instance.GetPendingOrders();
         if (pendingOrders.Count > 0)
         {
-            Debug.Log($"<color=green>Take Order1594: {pendingOrders} {pendingOrders.Count} -> Moveto cookstation</color>");
+            TransitionToState(ChefState.MoveToCookingStation);
             _currentOrder = pendingOrders.First();
+            Debug.Log($"<color=green>Take Order1594: {pendingOrders} {pendingOrders.Count} {_currentOrder.OrderedDish} -> Moveto cookstation</color>");
             return Node.NodeState.SUCCESS;
         }
-        else
-        {
-            TransitionToState(ChefState.ReturnToWaitPos);
-        }
+        Debug.Log($"<color=green>Order1594:{_currentOrder}</color>");
+        TransitionToState(ChefState.ReturnToWaitPos);
         return Node.NodeState.FAILURE;
     }
 
     private Node.NodeState MoveToCookingStation()
     {
-        TransitionToState(ChefState.MoveToCookingStation);
         var moveResult = MoveTo(cookingStationPosition);
         if (moveResult == Node.NodeState.SUCCESS)
         {
