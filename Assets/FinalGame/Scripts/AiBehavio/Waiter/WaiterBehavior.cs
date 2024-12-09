@@ -254,6 +254,7 @@ public class WaiterBehavior : MonoBehaviour
 
         if (moveResult == Node.NodeState.SUCCESS)
         {
+           
             TransitionToState(StaffState.TakingOrder);
         }
 
