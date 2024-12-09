@@ -2,7 +2,6 @@
 using UnityEngine.AI;
 using System.Collections.Generic;
 using System.Linq;
-using static WaiterBehavior;
 
 public class ChefBehavior : MonoBehaviour
 {
@@ -16,9 +15,8 @@ public class ChefBehavior : MonoBehaviour
     [SerializeField] private float animationBlendSpeed = 0.1f;
 
     [Header("Positions")]
-    [SerializeField] private GameObject kitchenCounterPosition;
-    [SerializeField] private GameObject cookingStationPosition;
-    [SerializeField] private GameObject waitingPosition;
+    [SerializeField] private Transform kitchenCounterPosition;
+    [SerializeField] private Transform cookingStationPosition;
     #endregion
 
     #region Constants
@@ -37,12 +35,10 @@ public class ChefBehavior : MonoBehaviour
     public enum ChefState
     {
         Idle,
-        ReturnToWaitPos,
         PreparingFood,
         Cooking,
         DeliveringFood,
-        Cleaning,
-        MoveToCookingStation
+        Cleaning
     }
     public ChefState CurrentState { get; private set; } = ChefState.Idle;
     #endregion
@@ -102,7 +98,7 @@ public class ChefBehavior : MonoBehaviour
         return new Selector(new List<Node>
         {
             CreateOrderHandlingSequence(),
-            new Leaf(ReturnToWaitPos)
+            new Leaf(ReturnToIdleState)
         });
     }
 
@@ -150,28 +146,25 @@ public class ChefBehavior : MonoBehaviour
     private Node.NodeState FindPendingOrder()
     {
         var pendingOrders = RestaurantManager.Instance.GetPendingOrders();
+
         if (pendingOrders.Count > 0)
         {
-            Debug.Log($"<color=green>Take Order1594: {pendingOrders} {pendingOrders.Count} -> Moveto cookstation</color>");
             _currentOrder = pendingOrders.First();
             return Node.NodeState.SUCCESS;
         }
-        else
-        {
-            TransitionToState(ChefState.ReturnToWaitPos);
-        }
+
         return Node.NodeState.FAILURE;
     }
 
     private Node.NodeState MoveToCookingStation()
     {
-        TransitionToState(ChefState.MoveToCookingStation);
-        var moveResult = MoveTo(cookingStationPosition);
+        var moveResult = MoveTo(cookingStationPosition.position);
+
         if (moveResult == Node.NodeState.SUCCESS)
         {
             TransitionToState(ChefState.Cooking);
         }
-        Debug.Log($"<color=green>Move to cooking station check: {moveResult}</color>");
+
         return moveResult;
     }
 
@@ -195,7 +188,7 @@ public class ChefBehavior : MonoBehaviour
 
     private Node.NodeState DeliverFoodToWaiter()
     {
-        var moveResult = MoveTo(kitchenCounterPosition);
+        var moveResult = MoveTo(kitchenCounterPosition.position);
 
         if (moveResult == Node.NodeState.SUCCESS)
         {
@@ -223,34 +216,16 @@ public class ChefBehavior : MonoBehaviour
         TransitionToState(ChefState.Idle);
         return Node.NodeState.SUCCESS;
     }
-    private Node.NodeState ReturnToWaitPos()
-    {
-        Debug.Log($"<color=green> Current state: {CurrentState} </color>");
-        if (CurrentState == ChefState.ReturnToWaitPos)
-        {
-            var moveResult = MoveTo(waitingPosition);
-
-            if (moveResult == Node.NodeState.SUCCESS)
-            {
-                TransitionToState(ChefState.Idle);
-                Debug.Log($"<color=green> Return to wait pos {CurrentState} {moveResult}</color>");
-                return moveResult;
-            }
-            return moveResult;
-        }
-        return Node.NodeState.FAILURE;
-    }
     #endregion
 
     #region Navigation
-    private Node.NodeState MoveTo(GameObject destination)
+    private Node.NodeState MoveTo(Vector3 destination)
     {
-        float distanceToTarget = Vector3.Distance(transform.position, destination.transform.position);
-        Debug.Log($"<color=green>Target: {destination}" + $"Agent befor check: {agent.hasPath}</color>");
-        if (!agent.hasPath || agent.remainingDistance > agent.stoppingDistance)
+        float distanceToTarget = Vector3.Distance(transform.position, destination);
+
+        if (!agent.hasPath)
         {
-            agent.SetDestination(destination.transform.position);
-            Debug.Log($"<color=green>Agent after check: {agent.hasPath}</color>");
+            agent.SetDestination(destination);
             return Node.NodeState.RUNNING;
         }
 
@@ -276,7 +251,7 @@ public class ChefBehavior : MonoBehaviour
 
     private void TransitionToState(ChefState newState)
     {
-        Debug.Log($"<color=green>Chef transitioning from {CurrentState} to {newState}</color>");
+        Debug.Log($"Chef transitioning from {CurrentState} to {newState}");
 
         // Enter new state logic
         switch (newState)

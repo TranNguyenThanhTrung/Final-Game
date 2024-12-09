@@ -181,7 +181,7 @@ public class WaiterBehavior : MonoBehaviour
         if (_currentOrder.Customer != null && !_currentOrder.Customer.HasBeenServed())
         {
             _currentOrder.Customer.MarkAsServed();
-            
+            Debug.Log($"Da oder: --------------------------{_currentOrder.Customer.HasBeenServed()}");
             TransitionToState(StaffState.MovingToKitchenCounter);
             return Node.NodeState.SUCCESS;
         }
@@ -219,7 +219,7 @@ public class WaiterBehavior : MonoBehaviour
                var customer = seat.GetCurrentCustomer();
                return customer != null && !customer.HasBeenServed() && customer.HasOrdered();
            }).ToList();
-            
+            Debug.Log(unservedSeats.Count);
             if (unservedSeats.Count > 0)
             {
                 _currentSeat = FindNearestSeatWithCustomer(seatsWithCustomers);
@@ -234,7 +234,7 @@ public class WaiterBehavior : MonoBehaviour
                             Customer = customer,
                             OrderedDish = customer.CurrentOrder
                         };
-                        
+                        Debug.Log($"Found seat with customer: {_currentOrder.Customer} {_currentOrder.OrderedDish}");
 
                         return Node.NodeState.SUCCESS;
                     }
@@ -242,7 +242,7 @@ public class WaiterBehavior : MonoBehaviour
             }
         }
         TransitionToState(StaffState.ReturningToWaitPosition);
-       
+        Debug.Log($"No seats with customers found: {seatsWithCustomers}");
         return Node.NodeState.FAILURE;
     }
 
@@ -254,7 +254,7 @@ public class WaiterBehavior : MonoBehaviour
 
         if (moveResult == Node.NodeState.SUCCESS)
         {
-           
+            Debug.Log($"Reached seat {_currentSeat.seatID}");
             TransitionToState(StaffState.TakingOrder);
         }
 
@@ -271,12 +271,12 @@ public class WaiterBehavior : MonoBehaviour
             if (customer != null && !seat.AvailableChair && customer.HasOrdered())
             {
                 seatsWithSeatedCustomers.Add(seat);
-                
+                Debug.Log($"nhan ghe {seat.currentCustomer}");
             }
             if (customer != null && !seat.AvailableChair&& customer.HasBeenServed())
             {
                 seatsWithSeatedCustomers.Remove(seat);
-               
+                Debug.Log($"bo ghe {seat.currentCustomer}");
             }    
         }
 
@@ -309,14 +309,14 @@ public class WaiterBehavior : MonoBehaviour
         float distanceToTarget = Vector3.Distance(transform.position, destination);
         if (!agent.hasPath)
         {
-            
+            Debug.Log($"{agent.name}{agent.hasPath}");
             agent.SetDestination(destination);
             return Node.NodeState.RUNNING;
         }
 
         if (distanceToTarget < ARRIVAL_THRESHOLD)
         {
-            
+            Debug.Log($"{agent.name}{agent.hasPath}");
             agent.ResetPath();
             return Node.NodeState.SUCCESS;
         }
@@ -347,7 +347,7 @@ public class WaiterBehavior : MonoBehaviour
 
     private void TransitionToState(StaffState newState)
     {
-       
+        Debug.Log($"Staff transitioning from {CurrentState} to {newState}");
 
         // Exit current state logic
         //switch (CurrentState)

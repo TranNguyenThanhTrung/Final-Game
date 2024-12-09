@@ -13,7 +13,7 @@ public class RestaurantManager : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = FindFirstObjectByType<RestaurantManager>();
+                instance = FindObjectOfType<RestaurantManager>();
             }
             return instance;
         }
@@ -50,10 +50,10 @@ public class RestaurantManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        //else
-        //{
-        //    Destroy(gameObject);
-        //}
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     void Start() => InitializeSeat();
     void Update()
